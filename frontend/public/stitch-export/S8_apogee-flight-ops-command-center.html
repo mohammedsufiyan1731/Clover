@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><title>Apogee Command Center</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "primary-fixed": "#ffdbd0", "on-surface-variant": "#e4beb3", "on-secondary-container": "#00633a", "primary-fixed-dim": "#ffb59e", "on-primary-fixed-variant": "#852400", "surface-variant": "#293644", "secondary-fixed-dim": "#00e38b", "surface-container-lowest": "#030f1c", "surface-container": "#14212e", "surface-tint": "#ffb59e", "surface-container-highest": "#293644", "on-primary-container": "#541400", "on-secondary-fixed-variant": "#00522f", "tertiary-fixed-dim": "#ffb955", "surface": "#071421", "outline-variant": "#5b4038", "on-primary": "#5e1700", "on-tertiary-fixed": "#291800", "inverse-on-surface": "#25313f", "inverse-primary": "#ae3200", "on-tertiary-container": "#3e2600", "surface-container-low": "#101d2a", "outline": "#ab897f", "background": "#071421", "on-error": "#690005", "tertiary-container": "#c68414", "on-error-container": "#ffdad6", "surface-bright": "#2e3a49", "primary-container": "#ff5a1f", "secondary-container": "#03e98f", "on-primary-fixed": "#3a0b00", "inverse-surface": "#d6e4f6", "secondary-fixed": "#56ffa7", "primary": "#ffb59e", "on-secondary-fixed": "#002110", "tertiary": "#ffb955", "error": "#ffb4ab", "on-tertiary": "#452b00", "secondary": "#8dffba", "error-container": "#93000a", "on-tertiary-fixed-variant": "#633f00", "on-background": "#d6e4f6", "tertiary-fixed": "#ffddb4", "on-secondary": "#00391f", "on-surface": "#d6e4f6", "surface-container-high": "#1e2b39", "surface-dim": "#071421" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-xs": "0.25rem", "space-md": "1rem", "space-xl": "2rem", "margin-mobile": "0.75rem", "gutter": "1rem", "space-lg": "1.5rem", "margin": "1.5rem", "space-sm": "0.5rem", "gutter-dense": "0.5rem" }, "fontFamily": { "body-md": ["Inter"], "label-badge": ["JetBrains Mono"], "label-code": ["JetBrains Mono"], "headline-xl": ["Space Grotesk"], "headline-md": ["Space Grotesk"], "headline-lg": ["Space Grotesk"], "telemetry-md": ["JetBrains Mono"], "headline-lg-mobile": ["Space Grotesk"], "telemetry-lg": ["JetBrains Mono"], "headline-xl-mobile": ["Space Grotesk"], "body-sm": ["Inter"], "body-lg": ["Inter"] }, "fontSize": { "body-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400"}], "label-badge": ["10px", {"lineHeight": "12px", "letterSpacing": "0.12em", "fontWeight": "700"}], "label-code": ["11px", {"lineHeight": "14px", "letterSpacing": "0.08em", "fontWeight": "600"}], "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "headline-md": ["20px", {"lineHeight": "26px", "letterSpacing": "0em", "fontWeight": "600"}], "headline-lg": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "telemetry-md": ["14px", {"lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500"}], "headline-lg-mobile": ["22px", {"lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "600"}], "telemetry-lg": ["20px", {"lineHeight": "24px", "letterSpacing": "0.05em", "fontWeight": "700"}], "headline-xl-mobile": ["30px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "700"}], "body-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400"}], "body-lg": ["16px", {"lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400"}] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}.scanlines{background:linear-gradient(rgba(18,16,16,0) 50%,rgba(0,0,0,0.25) 50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02));background-size:100% 3px,3px 100%;pointer-events:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface flex flex-col min-h-screen relative font-body-md text-body-md antialiased"><div class="fixed inset-0 scanlines z-40 opacity-40"></div><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_4px_20px_rgba(0,0,0,0.4)] pt-safe"><div class="h-36 px-margin-mobile flex flex-col justify-between py-space-xs"><div class="flex items-center justify-between text-on-surface-variant font-label-badge text-label-badge uppercase tracking-wider"><div class="flex items-center gap-space-xs"><span class="bg-surface-container-highest text-secondary px-1.5 py-0.5 rounded">APOGEE</span><span class="text-outline font-telemetry-md text-body-sm">//</span><span class="font-label-code text-label-code tracking-widest text-on-surface">UTC 14:32:08</span></div><div class="flex items-center gap-space-xs"><span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span><span class="text-secondary tracking-widest font-label-badge text-label-badge">SYSTEMS NOMINAL</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div><div class="flex items-center justify-between"><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="text-outline font-label-badge text-label-badge">[+]</span><h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight uppercase">Tests</h1></div><p class="font-body-sm text-body-sm text-outline truncate max-w-[280px]">Crew status, assessment readiness and batch gaps</p></div><div class="bg-surface-container-high px-space-xs py-0.5 rounded text-right"><span class="text-tertiary font-label-badge text-label-badge block uppercase tracking-widest">CALLOUT</span><span class="font-label-code text-label-code text-on-surface-variant block uppercase tracking-tighter">PRIYA // TR-01</span></div></div><div class="flex items-center justify-between font-label-badge text-label-badge text-outline bg-surface-container-lowest px-space-xs py-0.5 rounded"><span class="tracking-widest uppercase">SYS_ID: APG-CC-90</span><span class="text-primary uppercase tracking-wider">AUTH: FLIGHT_DIR</span><span class="tracking-widest">LOC: BAY-01</span></div></div></header><main class="flex flex-col relative w-full px-margin-mobile pt-36 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full gap-space-md text-on-surface">
+<!-- TOP CONSOLE ACTION & ALERT BANNER -->
+<div class="flex flex-col gap-space-sm w-full">
+<div class="flex items-center justify-between gap-space-sm bg-surface-container-low p-space-xs rounded-lg shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-badge text-label-badge text-outline">[BAY-01]</span>
+<span class="font-label-code text-label-code text-on-surface-variant uppercase tracking-wider">TELEM_UPLINK // LIVE</span>
+</div>
+<button class="flex items-center gap-1 bg-surface-container-high active:bg-surface-variant px-space-xs py-1 rounded text-on-surface font-label-badge text-label-badge uppercase tracking-widest shadow-sm" type="button">
+<span class="material-symbols-outlined text-[14px] text-primary">download</span>
+<span>EXPORT READINESS CSV</span>
+</button>
+</div>
+<!-- ERROR BANNER -->
+<div class="bg-surface-container-highest p-space-sm rounded-lg flex items-start justify-between gap-space-sm shadow-md">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary-container text-[18px] shrink-0 mt-0.5">warning</span>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="bg-primary-container text-on-primary-container px-1 py-0.2 rounded font-label-badge text-label-badge font-bold">[ERR // 0x4B]</span>
+<span class="font-label-code text-label-code text-primary uppercase">SYNC_ROSTER_FAIL</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface mt-0.5 leading-snug">Roster could not sync. Retry loading the crew roster.</p>
+</div>
+</div>
+<button class="shrink-0 bg-surface-container text-secondary font-label-badge text-label-badge px-2 py-1 rounded uppercase tracking-wider active:bg-surface-bright" type="button">
+        [RETRY SYNC]
+      </button>
+</div>
+</div>
+<!-- FLIGHT METRICS GRID -->
+<div class="grid grid-cols-2 gap-space-sm w-full">
+<!-- Metric 1 -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col justify-between shadow-sm relative">
+<div class="flex items-center justify-between text-outline font-label-badge text-label-badge">
+<span>[MTR-01]</span>
+<span>+</span>
+</div>
+<div class="my-1 flex items-baseline justify-between">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-on-surface tracking-tighter">12</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">groups</span>
+</div>
+<div class="font-label-code text-label-code text-on-surface-variant uppercase tracking-wider">
+        STUDENTS ENROLLED
+      </div>
+</div>
+<!-- Metric 2 -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col justify-between shadow-sm relative">
+<div class="flex items-center justify-between text-outline font-label-badge text-label-badge">
+<span>[MTR-02]</span>
+<span>+</span>
+</div>
+<div class="my-1 flex items-baseline justify-between">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-secondary tracking-tighter">58<span class="text-body-sm text-outline">%</span></span>
+<span class="font-label-badge text-label-badge text-secondary bg-surface-container px-1 py-0.5 rounded">MID-BAND</span>
+</div>
+<div>
+<div class="font-telemetry-md text-[10px] text-secondary tracking-tight select-none">[======.....]</div>
+<div class="font-label-code text-label-code text-on-surface-variant uppercase tracking-wider mt-0.5">
+          AVG READINESS
+        </div>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col justify-between shadow-sm relative">
+<div class="flex items-center justify-between text-outline font-label-badge text-label-badge">
+<span>[MTR-03]</span>
+<span>+</span>
+</div>
+<div class="my-1 flex items-baseline justify-between">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-primary tracking-tighter">03</span>
+<span class="bg-primary text-on-primary font-label-badge text-label-badge px-1 py-0.5 rounded uppercase font-bold tracking-widest animate-pulse">ALERT</span>
+</div>
+<div class="font-label-code text-label-code text-on-surface-variant uppercase tracking-wider">
+        BELOW THRESHOLD
+      </div>
+</div>
+<!-- Metric 4 -->
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col justify-between shadow-sm relative">
+<div class="flex items-center justify-between text-outline font-label-badge text-label-badge">
+<span>[MTR-04]</span>
+<span>+</span>
+</div>
+<div class="my-1 flex items-baseline justify-between">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-tertiary tracking-tighter">04</span>
+<span class="material-symbols-outlined text-outline text-[20px]">assignment_turned_in</span>
+</div>
+<div class="font-label-code text-label-code text-on-surface-variant uppercase tracking-wider">
+        TESTS ASSIGNED
+      </div>
+</div>
+</div>
+<!-- ACTIVE TAB DIRECTIVE: TEST SPECIFICATION FORM -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-space-sm shadow-md relative">
+<!-- Panel Header Strip -->
+<div class="flex items-center justify-between pb-space-xs bg-surface-container-high px-space-xs py-1 rounded">
+<div class="flex items-center gap-space-xs">
+<span class="text-secondary font-label-badge text-label-badge">[+]</span>
+<span class="font-label-code text-label-code text-on-surface tracking-wider uppercase font-bold">PRIMARY DIRECTIVE // TEST SPECIFICATION</span>
+</div>
+<span class="font-label-badge text-label-badge text-outline">CFG_REV_2.4</span>
+</div>
+<form class="flex flex-col gap-space-sm w-full" onsubmit="event.preventDefault();">
+<!-- Input 1: Test Name -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-on-surface-variant font-label-code text-label-code">
+<label class="uppercase tracking-wider" for="test-name">TEST DESIGNATION</label>
+<span class="text-outline text-label-badge">[STR_UTF8]</span>
+</div>
+<div class="bg-surface-container-lowest px-space-sm py-1.5 rounded flex items-center shadow-inner">
+<input class="w-full bg-transparent text-on-surface font-body-md text-body-md focus:outline-none" id="test-name" type="text" value="Backend Readiness Check"/>
+<span class="material-symbols-outlined text-outline text-[16px]">terminal</span>
+</div>
+</div>
+<!-- Two-column sub fields -->
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Topic Selector -->
+<div class="flex flex-col gap-1">
+<label class="text-on-surface-variant font-label-code text-label-code uppercase tracking-wider" for="topic-select">FIELD TOPIC</label>
+<div class="bg-surface-container-lowest px-space-sm py-1.5 rounded flex items-center justify-between shadow-inner">
+<span class="font-telemetry-md text-telemetry-md text-on-surface">Backend</span>
+<span class="material-symbols-outlined text-outline text-[16px]">tune</span>
+</div>
+</div>
+<!-- Duration -->
+<div class="flex flex-col gap-1">
+<label class="text-on-surface-variant font-label-code text-label-code uppercase tracking-wider" for="duration-select">CHRONO WINDOW</label>
+<div class="bg-surface-container-lowest px-space-sm py-1.5 rounded flex items-center justify-between shadow-inner">
+<span class="font-telemetry-md text-telemetry-md text-tertiary">25 minutes</span>
+<span class="material-symbols-outlined text-outline text-[16px]">schedule</span>
+</div>
+</div>
+</div>
+<!-- CSV Upload Telemetry Result Box -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col gap-1 shadow-sm">
+<div class="flex items-center justify-between font-label-badge text-label-badge">
+<div class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[15px]">data_check</span>
+<span class="tracking-widest uppercase font-bold">CSV TELEMETRY LOG</span>
+</div>
+<span class="bg-surface-container-highest text-tertiary px-1 py-0.2 rounded font-label-badge text-label-badge uppercase">VALIDATED</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug">
+<span class="text-secondary font-bold font-telemetry-md">22</span> questions added · <span class="text-primary font-bold font-telemetry-md">2</span> rows rejected. Review the rejected rows before assigning.
+        </p>
+<div class="flex items-center justify-between mt-1 pt-1 bg-surface-container-lowest px-space-xs py-0.5 rounded">
+<span class="font-label-badge text-label-badge text-outline uppercase tracking-wider">FILE: CSE_BE_READINESS_V1.CSV</span>
+<button class="font-label-badge text-label-badge text-primary uppercase underline" type="button">ERR_LOG [2]</button>
+</div>
+</div>
+<!-- Batch Target -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center text-on-surface-variant font-label-code text-label-code">
+<label class="uppercase tracking-wider">TARGET CREW COHORT</label>
+<span class="text-secondary text-label-badge">[ACTIVE]</span>
+</div>
+<div class="bg-surface-container-lowest px-space-sm py-1.5 rounded flex items-center justify-between shadow-inner">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-telemetry-md text-telemetry-md text-on-surface tracking-wider">CSE-A 2027</span>
+</div>
+<span class="material-symbols-outlined text-outline text-[18px]">expand_more</span>
+</div>
+</div>
+<!-- Primary Action CTA (Signal Orange Ignition Button) -->
+<button class="w-full mt-space-xs bg-primary-container text-on-primary-container font-headline-md text-headline-md uppercase tracking-wider py-2.5 rounded-lg flex items-center justify-center gap-space-xs active:opacity-90 shadow-md" type="button">
+<span class="material-symbols-outlined text-[20px]">rocket_launch</span>
+<span>ASSIGN TEST</span>
+</button>
+</form>
+</div>
+<!-- TACTICAL SPLIT SECTION 1: BATCH WEAK TOPICS -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-space-sm shadow-md">
+<div class="flex items-center justify-between pb-space-xs bg-surface-container-high px-space-xs py-1 rounded">
+<div class="flex items-center gap-space-xs">
+<span class="text-primary font-label-badge text-label-badge">[+]</span>
+<h2 class="font-label-code text-label-code text-on-surface tracking-wider uppercase font-bold">BATCH WEAK TOPICS // DEFICIENCY VECTOR</h2>
+</div>
+<span class="font-label-badge text-label-badge text-tertiary">3 IDENTIFIED</span>
+</div>
+<div class="flex flex-col gap-space-sm">
+<!-- Item 1: Docker / Containers -->
+<div class="bg-surface-container p-space-xs rounded flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md text-on-surface font-semibold">Docker / Containers</span>
+<span class="font-telemetry-md text-telemetry-md text-tertiary font-bold">7 CADETS</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded overflow-hidden">
+<div class="bg-tertiary h-full rounded" style="width: 58.3%;"></div>
+</div>
+<div class="flex justify-between items-center text-outline font-label-badge text-label-badge">
+<span>CRITICAL_MASS_EXCEEDED</span>
+<span>58.3% COHORT GAP</span>
+</div>
+</div>
+<!-- Item 2: SQL Joins -->
+<div class="bg-surface-container p-space-xs rounded flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md text-on-surface font-semibold">SQL Joins</span>
+<span class="font-telemetry-md text-telemetry-md text-tertiary font-bold">6 CADETS</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded overflow-hidden">
+<div class="bg-tertiary h-full rounded" style="width: 50.0%;"></div>
+</div>
+<div class="flex justify-between items-center text-outline font-label-badge text-label-badge">
+<span>MODERATE_REMEDIATION</span>
+<span>50.0% COHORT GAP</span>
+</div>
+</div>
+<!-- Item 3: REST API Design -->
+<div class="bg-surface-container p-space-xs rounded flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-body-md text-on-surface font-semibold">REST API Design</span>
+<span class="font-telemetry-md text-telemetry-md text-on-surface-variant font-bold">4 CADETS</span>
+</div>
+<div class="w-full bg-surface-container-lowest h-2 rounded overflow-hidden">
+<div class="bg-surface-bright h-full rounded" style="width: 33.3%;"></div>
+</div>
+<div class="flex justify-between items-center text-outline font-label-badge text-label-badge">
+<span>NOMINAL_DEFICIENCY</span>
+<span>33.3% COHORT GAP</span>
+</div>
+</div>
+</div>
+</div>
+<!-- TACTICAL SPLIT SECTION 2: CREW ROSTER TABLE -->
+<div class="bg-surface-container-low rounded-lg p-space-sm flex flex-col gap-space-sm shadow-md">
+<div class="flex items-center justify-between pb-space-xs bg-surface-container-high px-space-xs py-1 rounded">
+<div class="flex items-center gap-space-xs">
+<span class="text-secondary font-label-badge text-label-badge">[+]</span>
+<h2 class="font-label-code text-label-code text-on-surface tracking-wider uppercase font-bold">CREW ROSTER // CADET TELEMETRY MATRIX</h2>
+</div>
+<span class="bg-surface-container text-secondary font-label-badge text-label-badge px-1 py-0.2 rounded uppercase">LIVE SCAN</span>
+</div>
+<!-- Telemetry Table Container -->
+<div class="flex flex-col gap-space-xs overflow-x-auto w-full">
+<!-- Table Header Bar -->
+<div class="grid grid-cols-12 gap-1 bg-surface-container-highest px-space-xs py-1 rounded text-outline font-label-badge text-label-badge uppercase tracking-wider">
+<span class="col-span-4">CADET / BATCH</span>
+<span class="col-span-2 text-center">SCORE</span>
+<span class="col-span-4">CRITICAL GAPS</span>
+<span class="col-span-2 text-right">STATUS</span>
+</div>
+<!-- Record 1 (Highlighted Priority: Aarav Sharma) -->
+<div class="grid grid-cols-12 gap-1 items-center bg-surface-container px-space-xs py-2 rounded-lg shadow-sm">
+<div class="col-span-4 flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary shrink-0"></span>
+<span class="font-body-md text-body-md text-on-surface font-semibold truncate">Aarav Sharma</span>
+</div>
+<span class="font-label-badge text-label-badge text-outline">CSE-A 2027</span>
+</div>
+<div class="col-span-2 text-center">
+<span class="font-telemetry-lg text-telemetry-lg text-on-surface font-bold">61</span>
+</div>
+<div class="col-span-4 flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-tertiary truncate">Docker, SQL Joins</span>
+<span class="font-label-badge text-label-badge text-outline uppercase">LOG: TODAY</span>
+</div>
+<div class="col-span-2 flex flex-col items-end">
+<span class="bg-surface-container-highest text-secondary font-label-badge text-label-badge px-1.5 py-0.5 rounded font-bold uppercase">ACTIVE</span>
+</div>
+</div>
+<!-- Record 2 (Alert: Riya Sen) -->
+<div class="grid grid-cols-12 gap-1 items-center bg-surface-container-lowest px-space-xs py-2 rounded-lg">
+<div class="col-span-4 flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shrink-0 animate-ping"></span>
+<span class="font-body-md text-body-md text-on-surface font-semibold truncate">Riya Sen</span>
+</div>
+<span class="font-label-badge text-label-badge text-outline">CSE-A 2027</span>
+</div>
+<div class="col-span-2 text-center">
+<span class="font-telemetry-lg text-telemetry-lg text-primary font-bold">48</span>
+</div>
+<div class="col-span-4 flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-primary truncate">REST API Design</span>
+<span class="font-label-badge text-label-badge text-outline uppercase">LOG: TODAY</span>
+</div>
+<div class="col-span-2 flex flex-col items-end">
+<span class="bg-primary text-on-primary font-label-badge text-label-badge px-1 py-0.5 rounded font-bold uppercase">WARN</span>
+</div>
+</div>
+<!-- Record 3 (Nominal: Dev Mehta) -->
+<div class="grid grid-cols-12 gap-1 items-center bg-surface-container-lowest px-space-xs py-2 rounded-lg">
+<div class="col-span-4 flex flex-col min-w-0">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-outline shrink-0"></span>
+<span class="font-body-md text-body-md text-on-surface font-semibold truncate">Dev Mehta</span>
+</div>
+<span class="font-label-badge text-label-badge text-outline">CSE-A 2027</span>
+</div>
+<div class="col-span-2 text-center">
+<span class="font-telemetry-lg text-telemetry-lg text-secondary font-bold">79</span>
+</div>
+<div class="col-span-4 flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-outline truncate">Docker / Cont.</span>
+<span class="font-label-badge text-label-badge text-outline uppercase">LOG: YSTDY</span>
+</div>
+<div class="col-span-2 flex flex-col items-end">
+<span class="bg-surface-container-highest text-outline font-label-badge text-label-badge px-1 py-0.5 rounded uppercase font-bold">NOMINAL</span>
+</div>
+</div>
+</div>
+<!-- Matrix Footer Readout -->
+<div class="flex items-center justify-between text-outline font-label-badge text-label-badge bg-surface-container px-space-xs py-1 rounded">
+<span class="tracking-widest uppercase">CADETS TRACKED: 03/12</span>
+<span class="text-secondary uppercase">END_OF_PAGE // CONSOLE_IDLE</span>
+</div>
+</div>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.5)]" data-active-classes="text-secondary bg-surface-container-high font-bold"><div class="flex justify-around items-center h-16 px-gutter-dense"><a aria-current="page" class="flex flex-col items-center justify-center gap-1 flex-1 h-12 rounded transition-all text-secondary bg-surface-container-high font-bold" data-path="tests" href="#"><span class="material-symbols-outlined text-[20px]">assignment</span><span class="font-label-badge text-label-badge tracking-widest uppercase">TESTS</span></a><a class="flex flex-col items-center justify-center gap-1 flex-1 h-12 text-on-surface-variant rounded transition-all" data-path="batches" href="#"><span class="material-symbols-outlined text-[20px]">layers</span><span class="font-label-badge text-label-badge tracking-widest uppercase">BATCHES</span></a><a class="flex flex-col items-center justify-center gap-1 flex-1 h-12 text-on-surface-variant rounded transition-all" data-path="students" href="#"><span class="material-symbols-outlined text-[20px]">school</span><span class="font-label-badge text-label-badge tracking-widest uppercase">STUDENTS</span></a></div></nav></body></html>
