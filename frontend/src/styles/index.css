@@ -111,3 +111,34 @@ body {
   line-height: 1.2;
   border-radius: 2px;
 }
+
+/* CRT Scanline Overlay */
+.crt-overlay {
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Paper Dossier Elevation */
+.paper-stack-shadow {
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.8), 8px 8px 0px rgba(14, 17, 22, 0.4);
+}
+
+/* Phosphor Cathode Ray Glow */
+.phosphor-glow {
+  text-shadow: 0 0 2px #3DFFA2;
+}
+
+.amber-glow {
+  text-shadow: 0 0 2px #FFB547;
+}
+
+/* Telemetry Status Blinking */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.15; }
+}
+
+.blink-status {
+  animation: blink 1s infinite;
+}

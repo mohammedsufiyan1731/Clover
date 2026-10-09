@@ -47,6 +47,16 @@ export default function StyleGuide() {
               <ExternalLink size={13} />
               <span>S1 Handshake HTML</span>
             </a>
+            <a
+              href="/stitch-export/S2_apogee-test-arena.html"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0E1116] border border-[#8B98A9]/40 hover:border-[#FF5A1F] text-white rounded-[2px] text-xs font-mono-data"
+            >
+              <ExternalLink size={13} />
+              <span>S2 Test Arena HTML</span>
+            </a>
+
           </div>
         }
       />

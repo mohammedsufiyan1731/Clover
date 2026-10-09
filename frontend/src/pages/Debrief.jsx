@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
 import BriefingCard from '../components/BriefingCard';
 import PanelCard from '../components/PanelCard';
@@ -8,19 +8,33 @@ import StatusStamp from '../components/StatusStamp';
 import SegmentedBar from '../components/SegmentedBar';
 import Button from '../components/Button';
 import { mockDebriefData, sampleTestQuestions } from '../mocks/apogeeData';
-import { Compass, CheckCircle2, XCircle, AlertCircle, Clock } from 'lucide-react';
+import { Compass, CheckCircle2, XCircle, AlertCircle, Clock, ShieldAlert } from 'lucide-react';
 
 export default function Debrief() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const attemptState = location.state || {};
+  const userAnswers = attemptState.answers || {};
   const debrief = mockDebriefData;
+
+  const score = attemptState.score !== undefined ? attemptState.score : debrief.score;
+  const accuracyRatio = attemptState.accuracyRatio || debrief.accuracyRatio;
+  const tabSwitches = attemptState.tabSwitches !== undefined ? attemptState.tabSwitches : 1;
+  const isPassed = score >= 65;
 
   return (
     <div className="space-y-6">
       <PageHeader
         eyebrow="POST-DRILL TELEMETRY ANALYSIS // APG-DEBRIEF-104"
         title={`DEBRIEF // ${debrief.testTitle.toUpperCase()}`}
-        description={`Submitted: ${debrief.submittedAt} · Accuracy: ${debrief.accuracyRatio} · Flight evaluation complete.`}
-        status={<StatusStamp label="DEBRIEF COMPLETE" tone="phosphor" rotation="rotate-1" />}
+        description={`Submitted: ${attemptState.submittedAt || debrief.submittedAt} · Accuracy: ${accuracyRatio} · Flight evaluation complete.`}
+        status={
+          <StatusStamp
+            label={isPassed ? 'PASS // CERTIFIED' : 'EVALUATION LOGGED'}
+            tone={isPassed ? 'phosphor' : 'amber'}
+            rotation="rotate-1"
+          />
+        }
         action={
           <Button
             variant="primary"
@@ -41,7 +55,7 @@ export default function Debrief() {
             eyebrow="TEST TELEMETRY RECORD"
             title="Attempt Score Summary"
             docId="SCORE CERTIFIED // APOGEE"
-            stamp={<StatusStamp label="PASS // 72%" tone="paper" />}
+            stamp={<StatusStamp label={`${isPassed ? 'PASS' : 'REVIEW'} // ${score}%`} tone={isPassed ? 'paper' : 'amber'} />}
             footer="MINIMUM BENCHMARK: 65%"
           >
             <div className="flex items-center justify-between gap-4 py-2">
@@ -51,11 +65,11 @@ export default function Debrief() {
                     CANDIDATE RESULT
                   </div>
                   <div className="font-mono-data text-4xl font-bold text-[#0E1116] tracking-tight">
-                    {debrief.score} <span className="text-base text-[#0E1116]/60">/ 100</span>
+                    {score} <span className="text-base text-[#0E1116]/60">/ 100</span>
                   </div>
                 </div>
                 <div className="text-xs text-[#0E1116]/80">
-                  Correct answers: <strong>{debrief.accuracyRatio}</strong>
+                  Correct answers: <strong>{accuracyRatio}</strong>
                 </div>
               </div>
 
@@ -70,8 +84,13 @@ export default function Debrief() {
               </div>
             </div>
 
-            <div className="mt-3 pt-2.5 border-t border-[#0E1116]/15 text-xs text-[#0E1116]/85">
-              Readiness delta: <strong>+4 points</strong> contributed to your overall Launch Readiness score.
+            <div className="mt-3 pt-2.5 border-t border-[#0E1116]/15 flex flex-wrap items-center justify-between text-xs text-[#0E1116]/85">
+              <span>Readiness delta: <strong>+{Math.round(score * 0.06)} points</strong> contributed to Launch Readiness.</span>
+              {tabSwitches > 0 && (
+                <span className="font-mono-data text-[10px] text-[#93000A] font-bold">
+                  FOCUS GUARD: {tabSwitches} TAB SWITCH(ES)
+                </span>
+              )}
             </div>
           </BriefingCard>
         </div>
@@ -81,19 +100,19 @@ export default function Debrief() {
           <PanelCard
             eyebrow="BATCH TELEMETRY // CSE-A 2027"
             title="Your Orbit / Batch Orbit"
-            status={<StatusStamp label="ABOVE AVERAGE" tone="phosphor" />}
+            status={<StatusStamp label={score >= debrief.batchAverage ? 'ABOVE AVERAGE' : 'BELOW AVERAGE'} tone={score >= debrief.batchAverage ? 'phosphor' : 'amber'} />}
             footer="BASED ON 12 BATCH PEER ATTEMPTS"
           >
             <div className="space-y-3 py-1">
               <div className="flex items-center justify-between font-mono-data text-xs">
                 <span className="text-[#8B98A9]">YOUR SCORE:</span>
-                <span className="text-[#3DFFA2] font-bold text-base">{debrief.score} / 100</span>
+                <span className={`font-bold text-base ${score >= debrief.batchAverage ? 'text-[#3DFFA2]' : 'text-[#FFB547]'}`}>{score} / 100</span>
               </div>
               <SegmentedBar
                 label="Candidate Accuracy"
-                value={debrief.score}
+                value={score}
                 max={100}
-                tone="phosphor"
+                tone={score >= debrief.batchAverage ? 'phosphor' : 'amber'}
               />
 
               <div className="flex items-center justify-between font-mono-data text-xs pt-1">
@@ -111,6 +130,7 @@ export default function Debrief() {
         </div>
 
       </div>
+
 
       {/* Middle Row: Topic Accuracies + Recommendation */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
@@ -199,9 +219,30 @@ export default function Debrief() {
                 </span>
               </div>
 
-              <div className="text-xs font-mono-data text-[#3DFFA2] flex items-center gap-2">
-                <CheckCircle2 size={13} />
-                <span>Correct Option: {q.options[q.correctIndex]}</span>
+              <div className="flex flex-wrap items-center gap-3 text-xs font-mono-data pt-1">
+                {userAnswers[idx] !== undefined ? (
+                  userAnswers[idx] === q.correctIndex ? (
+                    <div className="text-[#3DFFA2] flex items-center gap-1.5 font-bold">
+                      <CheckCircle2 size={14} />
+                      <span>YOUR ANSWER: {q.options[userAnswers[idx]]} [CORRECT // +1.0]</span>
+                    </div>
+                  ) : (
+                    <div className="text-[#FFB547] flex items-center gap-1.5 font-bold">
+                      <XCircle size={14} />
+                      <span>YOUR ANSWER: {q.options[userAnswers[idx]]} [INCORRECT // 0.0]</span>
+                    </div>
+                  )
+                ) : (
+                  <div className="text-[#8B98A9] flex items-center gap-1.5">
+                    <AlertCircle size={14} />
+                    <span>YOUR ANSWER: [SKIPPED / UNANSWERED // 0.0]</span>
+                  </div>
+                )}
+
+                <div className="text-[#BFE3FF] flex items-center gap-1.5 ml-auto">
+                  <span className="text-[#8B98A9]">KEY:</span>
+                  <span className="font-bold">{q.options[q.correctIndex]}</span>
+                </div>
               </div>
 
               <div className="text-[11px] text-[#8B98A9] bg-[#161B22] p-2 rounded-[2px] border-l-2 border-[#BFE3FF]">
