@@ -66,6 +66,15 @@ export default function StyleGuide() {
               <span>S4 Debrief HTML</span>
             </a>
             <a
+              href="/stitch-export/S5_apogee-adaptive-technical-interview.html"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0E1116] border border-[#8B98A9]/40 hover:border-[#FF5A1F] text-white rounded-[2px] text-xs font-mono-data"
+            >
+              <ExternalLink size={13} />
+              <span>S5 Interview HTML</span>
+            </a>
+            <a
               href="/stitch-export/S8_apogee-flight-ops-command-center.html"
               target="_blank"
               rel="noreferrer"

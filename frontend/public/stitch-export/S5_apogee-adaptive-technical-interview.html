@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apogee // Adaptive Interview Console</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: '#0E1116',
+            panel: '#161B22',
+            'panel-card': '#1C222C',
+            paper: '#F2EBDD',
+            signal: '#FF5A1F',
+            phosphor: '#3DFFA2',
+            amber: '#FFB547',
+            steel: '#8B98A9',
+            ice: '#BFE3FF',
+            gridline: 'rgba(139, 152, 169, 0.15)',
+          },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'monospace'],
+            heading: ['"Space Grotesk"', 'sans-serif'],
+            body: ['"Inter"', 'sans-serif'],
+          },
+          boxShadow: {
+            hard: '3px 3px 0px 0px #0E1116',
+            'hard-sm': '2px 2px 0px 0px #0E1116',
+            'hard-signal': '3px 3px 0px 0px #FF5A1F',
+            'hard-steel': '2px 2px 0px 0px #8B98A9',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Scanline pattern & analog grit */
+    .scanlines {
+      background: linear-gradient(
+        rgba(14, 17, 22, 0) 50%, 
+        rgba(0, 0, 0, 0.28) 50%
+      ), linear-gradient(
+        90deg,
+        rgba(255, 0, 0, 0.02),
+        rgba(0, 255, 0, 0.01),
+        rgba(0, 0, 255, 0.02)
+      );
+      background-size: 100% 3px, 6px 100%;
+    }
+    .crosshair-corner {
+      position: relative;
+    }
+    .crosshair-corner::before {
+      content: '+';
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #8B98A9;
+      line-height: 1;
+      opacity: 0.6;
+    }
+    .crosshair-corner::after {
+      content: '+';
+      position: absolute;
+      bottom: -6px;
+      right: -6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #8B98A9;
+      line-height: 1;
+      opacity: 0.6;
+    }
+    /* CRT subtle glow on phosphor elements */
+    .phosphor-glow {
+      text-shadow: 0 0 6px rgba(61, 255, 162, 0.45);
+    }
+    .amber-glow {
+      text-shadow: 0 0 6px rgba(255, 181, 71, 0.4);
+    }
+    /* Orbit circle diagram */
+    .orbit-ring {
+      border: 1px dashed rgba(139, 152, 169, 0.35);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-ink text-paper font-body antialiased min-h-screen pb-44 select-none relative scanlines selection:bg-signal selection:text-ink">
+
+  <!-- ==================== TOP TELEMETRY BAR ==================== -->
+  <header class="sticky top-0 z-40 bg-panel border-b border-steel/25 px-3 py-1.5 flex items-center justify-between text-xs font-mono">
+    <div class="flex items-center gap-2">
+      <span class="inline-block w-2 h-2 rounded-full bg-phosphor animate-pulse"></span>
+      <span class="font-bold tracking-widest text-paper text-[11px]">APOGEE</span>
+      <span class="text-steel/50">/</span>
+      <span class="text-steel text-[10px] hidden xs:inline tracking-tight">MISSION-CONTROL</span>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1.5 bg-ink/70 px-2 py-0.5 border border-steel/20 rounded-[2px]">
+        <span class="text-[9px] uppercase tracking-wider text-steel">SYS:</span>
+        <span class="text-[10px] font-bold text-phosphor phosphor-glow">ONLINE</span>
+      </div>
+      <div class="text-[10px] text-steel font-mono tracking-wider tabular-nums">
+        <span id="utc-time">14:27:08</span> <span class="text-[9px] text-steel/60">UTC</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== STUDENT NAV SUB-BAR ==================== -->
+  <nav class="bg-ink border-b border-steel/20 px-3 py-2 flex items-center justify-between font-mono text-[11px]">
+    <div class="flex items-center gap-2">
+      <a href="#" class="px-2 py-0.5 border border-steel/40 text-paper font-bold hover:border-signal text-[10px] bg-panel">
+        &larr; ABORT / DASH
+      </a>
+      <span class="text-steel text-[10px]">CANDIDATE: <strong class="text-ice">ELENA ROV</strong></span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <span class="px-1.5 py-0.5 text-[9px] font-bold uppercase bg-amber/15 text-amber border border-amber/30 rounded-[2px]">
+        REC ACTIVE
+      </span>
+      <button onclick="document.getElementById('report-drawer').scrollIntoView({behavior: 'smooth'})" class="text-[10px] text-ice underline hover:text-signal">
+        SCORECARD &darr;
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==================== MAIN CONTAINER ==================== -->
+  <main class="max-w-md mx-auto px-3 pt-3 pb-8 space-y-3">
+
+    <!-- HEADER TITLE & APOGEE SUBTITLE -->
+    <section class="bg-panel p-3 border border-steel/25 rounded-[2px] shadow-hard crosshair-corner">
+      <div class="flex items-start justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-[9px] font-mono uppercase bg-steel/20 text-ice px-1.5 py-0.5 border border-steel/30 font-bold tracking-wider">SEC-04</span>
+            <span class="text-[10px] font-mono text-phosphor tracking-widest uppercase">// FLIGHT-READY</span>
+          </div>
+          <h1 class="font-heading text-lg font-bold text-paper tracking-tight mt-1 uppercase flex items-center gap-1.5">
+            Interview Room
+          </h1>
+          <p class="text-xs font-mono text-steel mt-0.5">
+            Technical round // adaptive follow-ups enabled
+          </p>
+        </div>
+
+        <!-- Registration mark symbol -->
+        <div class="w-7 h-7 flex items-center justify-center border border-steel/30 bg-ink text-steel font-mono text-[10px]">
+          &#8853;
+        </div>
+      </div>
+
+      <!-- SETUP SUMMARY STRIP -->
+      <div class="mt-3 pt-2.5 border-t border-dashed border-steel/25 flex flex-col gap-2">
+        <div class="flex items-center justify-between text-[10px] font-mono">
+          <span class="text-steel uppercase tracking-wider">SELECTED ROUND:</span>
+          <span class="bg-signal text-ink px-2 py-0.5 font-bold tracking-wider uppercase rounded-[2px]">
+            TECHNICAL
+          </span>
+        </div>
+
+        <div class="flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+          <span class="text-steel uppercase tracking-wider text-[9px]">FOCUS KEYWORDS:</span>
+          <span class="bg-panel-card text-ice px-2 py-0.5 border border-steel/30 rounded-[2px] font-mono font-medium">
+            Docker
+          </span>
+          <span class="bg-panel-card text-ice px-2 py-0.5 border border-steel/30 rounded-[2px] font-mono font-medium">
+            REST API
+          </span>
+          <span class="bg-panel-card text-ice px-2 py-0.5 border border-steel/30 rounded-[2px] font-mono font-medium">
+            SQL JOINS
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SESSION TELEMETRY STRIP (COMPACT COLLAPSIBLE ON MOBILE) -->
+    <section class="bg-panel border border-steel/25 p-2.5 rounded-[2px] font-mono text-[10px]">
+      <div class="flex items-center justify-between pb-2 border-b border-steel/20">
+        <div class="flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 bg-amber rounded-full animate-ping"></span>
+          <span class="font-bold text-paper tracking-widest text-[11px] uppercase">SESSION TELEMETRY</span>
+        </div>
+        <span class="text-steel text-[9px] uppercase tracking-wider">METRICS HUD</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 mt-2">
+        <div class="bg-ink p-2 border border-steel/20 rounded-[2px]">
+          <span class="text-[9px] text-steel uppercase block tracking-wider">ROUND</span>
+          <span class="text-paper font-bold text-xs">TECHNICAL // ADAPT</span>
+        </div>
+        <div class="bg-ink p-2 border border-steel/20 rounded-[2px]">
+          <span class="text-[9px] text-steel uppercase block tracking-wider">QUESTION INDEX</span>
+          <span class="text-phosphor font-bold text-xs phosphor-glow">02 / 05</span>
+        </div>
+        <div class="bg-ink p-2 border border-steel/20 rounded-[2px]">
+          <span class="text-[9px] text-steel uppercase block tracking-wider">CURRENT FOCUS</span>
+          <span class="text-ice font-bold text-xs">DOCKER // CONTAINERS</span>
+        </div>
+        <div class="bg-ink p-2 border border-steel/20 rounded-[2px]">
+          <span class="text-[9px] text-steel uppercase block tracking-wider">ENGINE STATUS</span>
+          <span class="text-amber font-bold text-[10px] amber-glow">WAITING FOR RESPONSE</span>
+        </div>
+      </div>
+
+      <!-- Orbit timeline graphic -->
+      <div class="mt-2.5 pt-2 border-t border-steel/15 flex items-center justify-between px-1">
+        <div class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 bg-phosphor text-ink font-bold text-[8px] flex items-center justify-center rounded-none font-mono">1</span>
+          <span class="h-[1px] w-5 bg-phosphor"></span>
+          <span class="w-2.5 h-2.5 bg-signal text-ink font-bold text-[8px] flex items-center justify-center rounded-none font-mono">2</span>
+          <span class="h-[1px] w-5 bg-steel/30"></span>
+          <span class="w-2.5 h-2.5 border border-steel/40 text-steel text-[8px] flex items-center justify-center rounded-none font-mono">3</span>
+          <span class="h-[1px] w-5 bg-steel/30"></span>
+          <span class="w-2.5 h-2.5 border border-steel/40 text-steel text-[8px] flex items-center justify-center rounded-none font-mono">4</span>
+          <span class="h-[1px] w-5 bg-steel/30"></span>
+          <span class="w-2.5 h-2.5 border border-steel/40 text-steel text-[8px] flex items-center justify-center rounded-none font-mono">5</span>
+        </div>
+        <span class="text-[9px] text-steel font-mono uppercase">TARGET: 40% DEPTH</span>
+      </div>
+    </section>
+
+    <!-- ==================== MAIN CHAT FEED ==================== -->
+    <section class="space-y-3 pt-1">
+      
+      <!-- MODE / DIAGNOSTIC BADGES -->
+      <div class="flex items-center justify-between gap-2 px-1">
+        <span class="text-[9px] font-mono text-steel uppercase tracking-widest flex items-center gap-1">
+          <span class="inline-block w-1 h-1 bg-phosphor"></span> LOG STREAM // CH-1
+        </span>
+        <span class="text-[9px] font-mono bg-panel text-steel/80 border border-steel/30 px-2 py-0.5 uppercase tracking-wider rounded-[2px]">
+          BASIC MODE &mdash; using practice bank
+        </span>
+      </div>
+
+      <!-- MESSAGE 1: INTERVIEWER INITIAL -->
+      <article class="bg-panel-card border border-steel/30 rounded-[2px] p-3 shadow-hard crosshair-corner">
+        <div class="flex items-center justify-between border-b border-steel/20 pb-1.5 mb-2 font-mono text-[10px]">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 bg-steel/50 inline-block"></span>
+            <span class="font-bold text-steel uppercase tracking-wider">APOGEE // SYSTEM INTERVIEWER</span>
+          </div>
+          <span class="text-steel/70 text-[9px]">T+00:01:14</span>
+        </div>
+        <p class="font-body text-sm text-paper leading-relaxed">
+          Tell me about a project where you used Docker. What problem did it solve?
+        </p>
+        <div class="mt-2 pt-1.5 flex items-center justify-between border-t border-steel/15 text-[9px] font-mono text-steel">
+          <span>TAG: <span class="text-ice">INITIAL_PROMPT</span></span>
+          <span>WEIGHT: 1.0</span>
+        </div>
+      </article>
+
+      <!-- MESSAGE 2: STUDENT RESPONSE -->
+      <article class="bg-panel border border-steel/30 rounded-[2px] p-3 ml-4 shadow-hard">
+        <div class="flex items-center justify-between border-b border-steel/20 pb-1.5 mb-2 font-mono text-[10px]">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 bg-ice inline-block"></span>
+            <span class="font-bold text-ice uppercase tracking-wider">CANDIDATE // ELENA</span>
+          </div>
+          <span class="text-steel/70 text-[9px]">T+00:01:52</span>
+        </div>
+        <p class="font-body text-sm text-paper leading-relaxed bg-ink/60 p-2 border border-steel/20 rounded-[2px]">
+          &ldquo;I used Docker once.&rdquo;
+        </p>
+        <!-- Evaluation micro-tag highlighting gaps -->
+        <div class="mt-2 flex items-center justify-between text-[9px] font-mono">
+          <span class="text-amber flex items-center gap-1">
+            <svg class="w-3 h-3 inline" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+            DEPTH GAP: 4 WORDS // MISSING OUTCOME
+          </span>
+          <span class="text-steel/70">CONFIDENCE: LOW</span>
+        </div>
+      </article>
+
+      <!-- MESSAGE 3: ADAPTIVE FOLLOW-UP (THE AHA MOMENT) -->
+      <article class="bg-panel-card border-2 border-signal rounded-[2px] p-3 shadow-hard relative overflow-hidden" style="border-left-width: 6px; border-left-color: #FF5A1F;">
+        
+        <!-- Stamped Angled Label in Background -->
+        <div class="absolute -right-3 -top-2 rotate-6 opacity-20 pointer-events-none select-none font-mono text-3xl font-black text-signal uppercase tracking-widest">
+          ADAPTIVE
+        </div>
+
+        <div class="flex items-center justify-between border-b border-steel/25 pb-1.5 mb-2 font-mono text-[10px]">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 bg-signal inline-block animate-pulse"></span>
+            <span class="font-bold text-signal uppercase tracking-wider">APOGEE // ADAPTIVE PROBE</span>
+          </div>
+          <span class="text-signal font-bold text-[9px]">T+00:02:08</span>
+        </div>
+
+        <!-- Follow-up notice micro-label -->
+        <div class="mb-2 inline-flex items-center gap-1.5 px-2 py-0.5 bg-signal/15 border border-signal/40 text-signal font-mono text-[9px] font-bold tracking-wider uppercase rounded-[2px]">
+          <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          FOLLOW-UP GENERATED FROM YOUR ANSWER
+        </div>
+
+        <p class="font-heading text-base font-semibold text-paper leading-snug">
+          &ldquo;What was the container running, and how did you start it?&rdquo;
+        </p>
+
+        <!-- Reactive telemetry reasoning note -->
+        <div class="mt-2.5 pt-2 border-t border-dashed border-steel/25 text-[10px] font-mono text-steel flex flex-col gap-1">
+          <div class="flex items-center justify-between">
+            <span class="text-steel">ANALYSIS TRIGGER:</span>
+            <span class="text-ice font-mono">SPECIFICITY_DEFICIT</span>
+          </div>
+          <div class="text-[9px] text-steel/80 italic">
+            Detected passive usage statement without architecture details. Probing runtime commands &amp; workload profile.
+          </div>
+        </div>
+      </article>
+
+      <!-- VISIBLE TYPING & ENGINE STATE -->
+      <div class="bg-ink border border-dashed border-steel/30 p-2.5 rounded-[2px] flex items-center gap-2.5 font-mono text-[11px] text-amber">
+        <div class="flex space-x-1">
+          <div class="w-1.5 h-1.5 bg-amber rounded-full animate-bounce" style="animation-delay: 0ms"></div>
+          <div class="w-1.5 h-1.5 bg-amber rounded-full animate-bounce" style="animation-delay: 150ms"></div>
+          <div class="w-1.5 h-1.5 bg-amber rounded-full animate-bounce" style="animation-delay: 300ms"></div>
+        </div>
+        <span class="text-[10px] tracking-tight">
+          Reviewing your answer for a useful follow-up&hellip;
+        </span>
+      </div>
+
+    </section>
+
+    <!-- ==================== INTERVIEW REPORT PREVIEW STATE ==================== -->
+    <section id="report-drawer" class="mt-6 pt-4 border-t-2 border-steel/30 space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="w-3 h-3 border border-ice flex items-center justify-center font-mono text-[9px] text-ice font-bold">#</span>
+          <h2 class="font-heading text-sm font-bold tracking-tight text-paper uppercase">
+            Telemetry Scorecard Preview
+          </h2>
+        </div>
+        <span class="font-mono text-[9px] bg-panel px-2 py-0.5 border border-steel/30 text-phosphor uppercase phosphor-glow">
+          INTERIM EVAL
+        </span>
+      </div>
+
+      <!-- Printed Mission Paper Style Card -->
+      <div class="bg-paper text-ink p-3.5 rounded-[2px] shadow-hard border border-ink relative overflow-hidden font-body">
+        
+        <!-- Registration mark & stamped header -->
+        <div class="flex justify-between items-start border-b border-ink/20 pb-2">
+          <div>
+            <div class="font-mono text-[9px] uppercase tracking-widest text-ink/70">
+              MISSION EVALUATION RUN // FLT-942
+            </div>
+            <div class="font-heading font-bold text-base tracking-tight text-ink uppercase">
+              Technical Readiness Report
+            </div>
+          </div>
+          <!-- Red stamped badge -->
+          <div class="border-2 border-signal text-signal font-mono text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider rotate-[-4deg]">
+            PROVISIONAL
+          </div>
+        </div>
+
+        <!-- Metric gauges -->
+        <div class="grid grid-cols-2 gap-2.5 my-3 font-mono text-xs">
+          <!-- Communication -->
+          <div class="border border-ink/20 bg-white/40 p-2">
+            <div class="flex justify-between text-[10px] font-bold">
+              <span>COMMUNICATION</span>
+              <span class="text-ink">6/10</span>
+            </div>
+            <div class="w-full bg-ink/10 h-1.5 mt-1">
+              <div class="bg-ink h-1.5" style="width: 60%"></div>
+            </div>
+          </div>
+
+          <!-- Technical Depth -->
+          <div class="border border-ink/20 bg-white/40 p-2">
+            <div class="flex justify-between text-[10px] font-bold">
+              <span>TECH DEPTH</span>
+              <span class="text-signal font-bold">4/10</span>
+            </div>
+            <div class="w-full bg-ink/10 h-1.5 mt-1">
+              <div class="bg-signal h-1.5" style="width: 40%"></div>
+            </div>
+          </div>
+
+          <!-- Problem Solving -->
+          <div class="border border-ink/20 bg-white/40 p-2">
+            <div class="flex justify-between text-[10px] font-bold">
+              <span>PROBLEM SOLVING</span>
+              <span>5/10</span>
+            </div>
+            <div class="w-full bg-ink/10 h-1.5 mt-1">
+              <div class="bg-ink h-1.5" style="width: 50%"></div>
+            </div>
+          </div>
+
+          <!-- Structure of Answers -->
+          <div class="border border-ink/20 bg-white/40 p-2">
+            <div class="flex justify-between text-[10px] font-bold">
+              <span>STRUCTURE</span>
+              <span>5/10</span>
+            </div>
+            <div class="w-full bg-ink/10 h-1.5 mt-1">
+              <div class="bg-ink h-1.5" style="width: 50%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Strengths & Weaknesses Breakdown -->
+        <div class="space-y-2 border-t border-ink/20 pt-2 font-mono text-[11px]">
+          <div>
+            <div class="font-bold text-[10px] uppercase text-ink flex items-center gap-1">
+              <span class="text-phosphor bg-ink px-1 py-0 text-[8px] font-bold">OK</span>
+              DEMONSTRATED STRENGTHS:
+            </div>
+            <ul class="list-disc list-inside text-[11px] text-ink/80 mt-0.5 space-y-0.5 font-body">
+              <li>&ldquo;You stayed on the question&rdquo;</li>
+              <li>&ldquo;You identified a relevant tool&rdquo;</li>
+            </ul>
+          </div>
+
+          <div class="mt-2">
+            <div class="font-bold text-[10px] uppercase text-signal flex items-center gap-1">
+              <span class="text-white bg-signal px-1 py-0 text-[8px] font-bold">WARN</span>
+              CRITICAL VULNERABILITIES:
+            </div>
+            <ul class="list-disc list-inside text-[11px] text-ink/80 mt-0.5 space-y-0.5 font-body">
+              <li>&ldquo;Explain what the container ran&rdquo;</li>
+              <li>&ldquo;Describe the outcome with a concrete example&rdquo;</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-3 pt-1 border-t border-dashed border-ink/30 text-right font-mono text-[9px] text-ink/60">
+          RECALCULATES REAL-TIME AFTER EACH ANSWER TRANSMISSION
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== ANCHORED ANSWER CONSOLE (MOBILE DOCKED) ==================== -->
+  <footer class="fixed bottom-0 left-0 right-0 z-50 bg-panel border-t-2 border-steel/30 shadow-[0_-8px_16px_rgba(0,0,0,0.6)]">
+    <div class="max-w-md mx-auto p-2.5 space-y-2">
+      
+      <!-- Top meta-line inside keyboard dock -->
+      <div class="flex items-center justify-between font-mono text-[9px] text-steel px-0.5">
+        <span class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 bg-signal rounded-full"></span>
+          INPUT PROTOCOL // ACTIVE CHAT
+        </span>
+        <span>ESC: CLEAR &bull; &crarr; ENTER: SEND</span>
+      </div>
+
+      <!-- Textarea container -->
+      <div class="relative">
+        <textarea 
+          rows="2" 
+          placeholder="Write your answer…"
+          class="w-full bg-ink border border-steel/40 text-paper font-body text-xs p-2.5 rounded-[2px] focus:outline-none focus:border-signal focus:ring-1 focus:ring-signal placeholder-steel/50 resize-none font-mono"
+        ></textarea>
+        <span class="absolute bottom-2 right-2 text-[9px] font-mono text-steel/60">
+          0 / 500 CHARS
+        </span>
+      </div>
+
+      <!-- Action buttons row -->
+      <div class="flex items-center gap-2">
+        <!-- Secondary: End Interview (Triggers Modal) -->
+        <button 
+          onclick="document.getElementById('abort-modal').classList.remove('hidden')"
+          class="flex-1 py-2 px-2 bg-ink border border-steel/40 text-steel font-mono text-[11px] font-bold uppercase tracking-wider hover:text-paper hover:border-steel active:translate-y-0.5 transition-all text-center rounded-[2px] shadow-hard-sm"
+        >
+          End interview
+        </button>
+
+        <!-- Primary: Send answer -->
+        <button 
+          class="flex-[2] py-2 px-3 bg-signal border border-signal text-ink font-mono text-xs font-bold uppercase tracking-widest hover:bg-signal/95 active:translate-y-0.5 transition-all flex items-center justify-center gap-1.5 rounded-[2px] shadow-hard"
+        >
+          <span>Send answer</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ==================== CONFIRMATION MODAL ==================== -->
+  <div id="abort-modal" class="hidden fixed inset-0 z-50 bg-ink/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-panel border-2 border-signal max-w-xs w-full p-4 rounded-[2px] shadow-hard font-mono space-y-3">
+      <div class="flex items-center justify-between border-b border-steel/20 pb-2">
+        <span class="text-signal font-bold text-xs uppercase tracking-wider flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+          ABORT INTERVIEW?
+        </span>
+        <button onclick="document.getElementById('abort-modal').classList.add('hidden')" class="text-steel hover:text-paper font-bold text-xs">&times;</button>
+      </div>
+      <p class="font-body text-xs text-paper">
+        Terminating will compute partial scores up to Question 02. Your Docker follow-up answer will not be scored.
+      </p>
+      <div class="flex items-center gap-2 pt-2">
+        <button onclick="document.getElementById('abort-modal').classList.add('hidden')" class="flex-1 py-1.5 bg-ink border border-steel/30 text-steel text-xs uppercase hover:text-paper">
+          Resume
+        </button>
+        <button onclick="alert('Interview ended. Generating final scorecard...'); document.getElementById('abort-modal').classList.add('hidden')" class="flex-1 py-1.5 bg-signal text-ink font-bold text-xs uppercase">
+          Confirm Exit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Live ticking UTC clock
+    function updateClock() {
+      const now = new Date();
+      const hours = String(now.getUTCHours()).padStart(2, '0');
+      const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+      const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+      const elem = document.getElementById('utc-time');
+      if (elem) elem.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
+</body>
+</html>
