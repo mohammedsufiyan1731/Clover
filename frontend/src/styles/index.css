@@ -1,0 +1,113 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0E1116;
+  --color-panel: #161B22;
+  --color-paper: #F2EBDD;
+  --color-signal: #FF5A1F;
+  --color-phosphor: #3DFFA2;
+  --color-amber: #FFB547;
+  --color-steel: #8B98A9;
+  --color-ice: #BFE3FF;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  --ink: #0E1116;
+  --panel: #161B22;
+  --paper: #F2EBDD;
+  --signal: #FF5A1F;
+  --phosphor: #3DFFA2;
+  --amber: #FFB547;
+  --steel: #8B98A9;
+  --ice: #BFE3FF;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--ink);
+  color: #E2E8F0;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-heading {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono-data {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Scanline subtle overlay */
+.scanlines {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.28) 50%,
+    rgba(0, 0, 0, 0.28)
+  );
+  background-size: 100% 4px;
+}
+
+/* Subtle grid matrix */
+.bg-grid-pattern {
+  background-image: radial-gradient(rgba(139, 152, 169, 0.15) 1px, transparent 0);
+  background-size: 16px 16px;
+}
+
+/* Corner crosshair registration markers */
+.reg-mark-card {
+  position: relative;
+}
+
+.reg-mark-card::before,
+.reg-mark-card::after {
+  content: '+';
+  position: absolute;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1;
+  color: rgba(139, 152, 169, 0.45);
+  pointer-events: none;
+}
+
+.reg-mark-card::before {
+  top: 4px;
+  left: 6px;
+}
+
+.reg-mark-card::after {
+  bottom: 4px;
+  right: 6px;
+}
+
+/* Hard offset shadow */
+.hard-shadow {
+  box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.85);
+}
+
+.hard-shadow-paper {
+  box-shadow: 3px 3px 0px #0E1116;
+}
+
+.hard-shadow-signal {
+  box-shadow: 2px 2px 0px #000;
+}
+
+/* Stamped Labels */
+.stamp {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  border-width: 1.5px;
+  border-style: solid;
+  padding: 2px 8px;
+  line-height: 1.2;
+  border-radius: 2px;
+}
