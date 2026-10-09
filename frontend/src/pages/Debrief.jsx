@@ -1,21 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import PageHeader from '../components/PageHeader';
-import BriefingCard from '../components/BriefingCard';
-import PanelCard from '../components/PanelCard';
-import StatusStamp from '../components/StatusStamp';
-import Button from '../components/Button';
-import { mockDebriefData } from '../mocks/apogeeData';
+import { mockDebriefData, sampleTestQuestions } from '../mocks/apogeeData';
 import {
   Compass,
-  CheckCircle2,
-  XCircle,
+  Check,
+  X,
   AlertTriangle,
-  Clock,
+  Timer,
+  Terminal,
+  Orbit,
   ArrowRight,
   PlaneTakeoff,
-  RotateCcw,
-  Zap,
+  CornerDownLeft,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 export default function Debrief() {
@@ -29,495 +27,634 @@ export default function Debrief() {
   const tabSwitches = attemptState.tabSwitches !== undefined ? attemptState.tabSwitches : 1;
   const isPassed = score >= 65;
 
-  const reviewQuestions = [
+  // Interactive state simulation mode from Stitch Screen (NORMAL, BUSY, ERROR)
+  const [simulationState, setSimulationState] = useState('normal');
+
+  // Interactive dispatch checklist
+  const [checklist, setChecklist] = useState({
+    audit: true,
+    drill: false,
+    pacing: false,
+  });
+
+  // Toggle full 12 questions vs 3 key highlights
+  const [showAllQuestions, setShowAllQuestions] = useState(false);
+
+  // Key audit samples from Stitch design
+  const keyAuditItems = [
     {
       id: 'Q01',
-      topic: 'SQL Basics',
+      code: 'BASIC_FILTER',
       status: 'CORRECT',
-      text: 'Which command retrieves all columns from the telemetry stream?',
-      selected: '[A] SELECT *',
-      validated: '[A] SELECT *',
-      isCorrect: true,
-    },
-    {
-      id: 'Q02',
+      selected: 'INNER JOIN',
+      key: 'INNER JOIN',
+      time: '00:32',
       topic: 'SQL Basics',
-      status: 'CORRECT',
-      text: 'Identify the clause used to filter rows based on altitude > 100km.',
-      selected: '[C] WHERE clause',
-      validated: '[C] WHERE clause',
       isCorrect: true,
-    },
-    {
-      id: 'Q03',
-      topic: 'Joins',
-      status: 'INCORRECT',
-      text: 'Include all left table telemetry records regardless of right table link matches.',
-      selected: '[B] INNER JOIN',
-      validated: '[D] LEFT OUTER JOIN',
-      isCorrect: false,
     },
     {
       id: 'Q04',
+      code: 'JOIN_CARTESIAN',
+      status: 'INCORRECT',
+      selected: 'LEFT OUTER JOIN',
+      key: 'CROSS JOIN',
+      time: '01:42 (LATENCY SPIKE)',
       topic: 'Joins',
-      status: 'TIME EXCEEDED + INCORRECT',
-      text: 'Generate a full Cartesian product of sensor readings and payload telemetry.',
-      selected: '[A] FULL JOIN',
-      validated: '[C] CROSS JOIN',
-      latency: '01:42',
-      limit: '00:45',
-      delta: '+57s',
       isCorrect: false,
+      latencySpike: true,
+    },
+    {
+      id: 'Q08',
+      code: 'GROUP_CLAUSE',
+      status: 'CORRECT',
+      selected: 'GROUP BY',
+      key: 'GROUP BY',
+      time: '00:41',
+      topic: 'Aggregation',
+      isCorrect: true,
     },
   ];
 
+  // Needle angle for accuracy gauge (180deg semicircle: 0% -> 0deg, 100% -> 180deg)
+  const gaugeAngle = (score / 100) * 180;
+
   return (
     <div className="space-y-6">
-      {/* 1. TOP HEADER & REGISTRATION STRIP */}
-      <div className="bg-[#101d2a] border border-[#8B98A9]/30 p-2.5 rounded-[2px] flex flex-wrap items-center justify-between text-[10px] font-mono-data text-[#8B98A9] gap-2">
+      {/* 1. TOP TELEMETRY & SUB-REGISTRATION RIBBON */}
+      <section className="bg-[#101d2a] border border-[#8B98A9]/30 p-2.5 rounded-[2px] flex flex-wrap items-center justify-between text-[10px] font-mono-data text-[#8B98A9] gap-2 hard-shadow">
         <div className="flex items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#3DFFA2] animate-pulse"></span>
-          <span className="text-[#3DFFA2] font-bold">APOGEE // SYS: NOMINAL</span>
-          <span>//</span>
-          <span>CADET-784</span>
-          <span>//</span>
-          <span>EVAL ASSESSMENT</span>
+          <span className="text-[#3DFFA2] font-bold">+</span>
+          <span className="text-[#D6E4F6] font-bold tracking-wider uppercase">
+            SYS: PLACEMENT-DEBRIEF
+          </span>
+          <span className="text-[#8B98A9]/40">//</span>
+          <span className="text-[#BFE3FF]">CADET-784</span>
+          <span className="text-[#8B98A9]/40">//</span>
+          <span>CHNL 04-A</span>
         </div>
-        <div className="flex items-center gap-2 text-[#BFE3FF]">
-          <span>UTC 14:02:58</span>
-          <span className="text-[#8B98A9]">//</span>
-          <span className="text-[#FF5A1F] font-bold">POST-FLIGHT RECORD</span>
-        </div>
-      </div>
-
-      <PageHeader
-        eyebrow="POST-DRILL TELEMETRY ANALYSIS // SEC_OPS_POST_FLIGHT"
-        title="DEBRIEF // TEST ATTEMPT"
-        description={`SQL Fundamentals Check · SPEC: FLIGHT-TEST-SQL-09 · Accuracy: ${accuracyRatio} · Flight evaluation verified.`}
-        status={
-          <div className="shrink-0 -rotate-3 bg-[#1e2b39] border border-[#FF5A1F]/40 px-2.5 py-1 rounded shadow-[2px_2px_0px_#000] text-center font-mono-data">
-            <div className="text-[10px] leading-tight text-[#FF5A1F] tracking-widest font-bold">
-              {isPassed ? 'DEBRIEF COMPLETE' : 'REVIEW REQUIRED'}
-            </div>
-            <div className="text-[8px] leading-none text-[#8B98A9] mt-0.5">AUTH: OPS-SYS-7</div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 text-[#3DFFA2] font-bold">
+            <span className="w-1.5 h-1.5 bg-[#3DFFA2] animate-pulse inline-block"></span>
+            <span className="phosphor-glow">UPLINK NOMINAL</span>
           </div>
-        }
-        action={
-          <Button
-            variant="primary"
-            onClick={() => navigate('/mission-control')}
-            icon={<Compass size={14} />}
-          >
-            Mission Control
-          </Button>
-        }
-      />
+          <span className="text-[#8B98A9]/40">//</span>
+          <span className="text-[#BFE3FF]">UTC 14:32:09</span>
+        </div>
+      </section>
 
-      {/* 2. TOP RESULTS: ARCHIVAL MISSION PRINT & DUAL ORBIT RADAR */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: Top Paper Result Card (Archival Mission Print) */}
+      {/* 2. DEBRIEF HEADER CARD & RUBBER STAMP */}
+      <article className="relative bg-[#161B22] border border-[#8B98A9]/35 p-4 md:p-5 shadow-hard-2 reg-mark-card">
+        {/* Mechanical corner registration ticks */}
+        <span className="absolute -top-1.5 -left-1.5 text-[10px] text-[#8B98A9] font-bold leading-none select-none">+</span>
+        <span className="absolute -top-1.5 -right-1.5 text-[10px] text-[#8B98A9] font-bold leading-none select-none">+</span>
+        <span className="absolute -bottom-1.5 -left-1.5 text-[10px] text-[#8B98A9] font-bold leading-none select-none">+</span>
+        <span className="absolute -bottom-1.5 -right-1.5 text-[10px] text-[#8B98A9] font-bold leading-none select-none">+</span>
+
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div>
+            <div className="font-mono-data text-[10px] text-[#FF5A1F] font-bold tracking-widest flex items-center gap-1.5 uppercase">
+              <span className="w-1.5 h-1.5 bg-[#FF5A1F] inline-block"></span>
+              DEBRIEF // TEST ATTEMPT
+            </div>
+            <h1 className="font-heading text-2xl md:text-3xl font-bold text-[#E1E2E9] mt-1 tracking-tight">
+              SQL Fundamentals Check
+            </h1>
+            <p className="font-mono-data text-xs text-[#8B98A9] mt-1">
+              SESSION_UID: FL-9041-KILO-09 · SPEC: FLIGHT-TEST-SQL-09
+            </p>
+          </div>
+
+          {/* Angled Rubber Stamp Badge (-4deg) */}
+          <div className="self-start sm:self-center transform -rotate-[4deg] shrink-0">
+            <div className={`border-2 px-3 py-1.5 text-center shadow-sm bg-[#0E1116] ${isPassed ? 'border-[#3DFFA2] text-[#3DFFA2]' : 'border-[#FFB547] text-[#FFB547]'}`}>
+              <div className="text-[9px] font-mono-data tracking-wider leading-none uppercase font-bold">
+                {isPassed ? 'STAMP VALID' : 'ACTION ADVISORY'}
+              </div>
+              <div className="text-xs font-heading font-bold tracking-widest leading-tight mt-0.5 whitespace-nowrap">
+                {isPassed ? '[ DEBRIEF COMPLETE ]' : '[ REVIEW REQUIRED ]'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      {/* 3. MAIN GRID: TOP PAPER CARD & DUAL ORBIT RADAR */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left: Top Paper Result Card (#F2EBDD printed archive paper) */}
         <div className="lg:col-span-6">
-          <div className="relative bg-[#F2EBDD] text-[#0E1116] p-5 rounded-[3px] border border-[#0E1116]/80 hard-shadow-paper reg-mark-card overflow-hidden h-full flex flex-col justify-between">
+          <article className="relative bg-[#F2EBDD] text-[#12151B] p-5 shadow-paper border border-[#12151B]/40 rounded-[2px] h-full flex flex-col justify-between">
+            {/* Dot-matrix perforation header border */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 perf-border opacity-70"></div>
+
             <div>
-              {/* Perforation holes & Doc ID */}
-              <div className="flex justify-between items-center pb-2 mb-3 border-b border-[#0E1116]/20 font-mono-data text-[10px]">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-[#0E1116]/40"></span>
-                  <span className="w-2 h-2 rounded-full bg-[#0E1116]/40"></span>
-                  <span className="font-bold uppercase tracking-wider text-[#0E1116]/70">
-                    FORM 88-AV // TELEMETRY SUMMARY
-                  </span>
-                </div>
-                <span className="text-[#0E1116]/60">DOC_ID: 9028-SQL</span>
+              <div className="flex justify-between items-center border-b border-[#12151B]/20 pb-2 pt-1 font-mono-data text-[10px]">
+                <span className="tracking-widest text-[#12151B]/80 font-bold uppercase">
+                  MANIFEST #SQ-0941 // FLIGHT CADET
+                </span>
+                <span className="bg-[#12151B] text-[#F2EBDD] px-2 py-0.5 font-bold uppercase">
+                  ARCHIVE COPY
+                </span>
               </div>
 
-              <div className="flex items-center justify-between gap-4">
-                {/* Score Index */}
+              <div className="mt-4 flex items-center justify-between gap-4">
+                {/* Big Ink Score */}
                 <div className="space-y-1">
-                  <span className="font-mono-data text-[10px] uppercase tracking-wider text-[#0E1116]/70 font-bold block">
-                    FLIGHT SCORE INDEX
-                  </span>
-                  <div className="flex items-baseline gap-1 font-mono-data">
-                    <span className="text-4xl md:text-5xl font-bold tracking-tight text-[#0E1116]">
-                      {score}
-                    </span>
-                    <span className="text-base text-[#0E1116]/60 font-bold">/ 100</span>
+                  <div className="text-[10px] font-mono-data text-[#12151B]/70 tracking-wider uppercase font-bold">
+                    AGGREGATE RATING
                   </div>
-                  <div className="flex items-center gap-1.5 mt-1 bg-[#0E1116]/10 px-2 py-0.5 rounded w-fit font-mono-data text-[11px]">
-                    <span className="font-bold text-[#0E1116]">{accuracyRatio} CORRECT</span>
-                    <span className="text-[#0E1116]/70">({score.toFixed(1)}% RAW)</span>
+                  <div className="font-heading text-4xl md:text-5xl font-bold tracking-tight text-[#12151B] leading-none">
+                    {score}{' '}
+                    <span className="font-mono-data text-lg md:text-xl text-[#12151B]/60 font-normal">
+                      / 100
+                    </span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 bg-[#12151B]/10 border border-[#12151B]/30 px-2 py-0.5 mt-2 rounded-[1px]">
+                    <span className="w-2 h-2 rounded-full bg-[#12151B]"></span>
+                    <span className="font-mono-data text-xs font-bold text-[#12151B]">
+                      {accuracyRatio} correct
+                    </span>
                   </div>
                 </div>
 
-                {/* Right: Analog Needle Gauge Dial SVG */}
-                <div className="relative flex flex-col items-center shrink-0">
-                  <svg className="w-24 h-20 overflow-visible" viewBox="0 0 100 80">
-                    {/* Background Arc */}
+                {/* Analog Mechanical Accuracy Dial Gauge */}
+                <div className="w-32 h-28 relative flex flex-col items-center justify-end shrink-0">
+                  <svg className="w-28 h-20 overflow-visible" viewBox="0 0 120 70">
+                    {/* Gauge Track */}
                     <path
-                      d="M 15,70 A 40,40 0 1,1 85,70"
+                      d="M 15 65 A 45 45 0 0 1 105 65"
                       fill="none"
-                      stroke="#0E1116"
+                      stroke="#12151B"
                       strokeLinecap="round"
                       strokeOpacity="0.15"
-                      strokeWidth="4"
+                      strokeWidth="6"
                     />
-                    {/* Active Arc */}
+                    {/* Segmented Ticks at 10% intervals */}
+                    <line stroke="#12151B" strokeWidth="2" x1="15" x2="22" y1="65" y2="65" />
+                    <line stroke="#12151B" strokeWidth="2" x1="22" x2="28" y1="42" y2="45" />
+                    <line stroke="#12151B" strokeWidth="2" x1="38" x2="42" y1="24" y2="30" />
+                    <line stroke="#12151B" strokeWidth="2" x1="60" x2="60" y1="18" y2="25" />
+                    <line stroke="#12151B" strokeWidth="2" x1="82" x2="78" y1="24" y2="30" />
+                    <line stroke="#12151B" strokeWidth="2" x1="98" x2="92" y1="42" y2="45" />
+                    <line stroke="#12151B" strokeWidth="2" x1="105" x2="98" y1="65" y2="65" />
+
+                    {/* Gauge Active Arc */}
                     <path
-                      d="M 15,70 A 40,40 0 1,1 85,70"
+                      d="M 15 65 A 45 45 0 0 1 97 37"
                       fill="none"
-                      stroke={score >= 65 ? '#007243' : '#FF5A1F'}
-                      strokeDasharray="140"
-                      strokeDashoffset={140 - (140 * score) / 100}
+                      stroke="#12151B"
                       strokeLinecap="round"
-                      strokeWidth="4.5"
+                      strokeWidth="6"
                     />
-                    {/* Calibration Ticks */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      fill="none"
-                      r="46"
-                      stroke="#0E1116"
-                      strokeDasharray="2, 6"
-                      strokeOpacity="0.4"
-                      strokeWidth="1"
-                    />
-                    {/* Needle Pivot & Arm */}
-                    <g transform={`rotate(${-90 + (score / 100) * 180}, 50, 50)`}>
-                      <line
-                        stroke="#0E1116"
-                        strokeLinecap="round"
-                        strokeWidth="2.5"
-                        x1="50"
-                        x2="50"
-                        y1="50"
-                        y2="16"
-                      />
-                      <polygon fill="#FF5A1F" points="50,12 47,20 53,20" />
+
+                    {/* Phosphor Signal Orange Needle */}
+                    <g transform={`rotate(${-90 + (score / 100) * 180}, 60, 65)`}>
+                      <polygon fill="#FF5A1F" points="60,63 58,65 92,34 62,65" />
                     </g>
-                    <circle cx="50" cy="50" fill="#0E1116" r="4.5" />
-                    <text fill="#0E1116" fontSize="7" opacity="0.6" x="12" y="77" fontFamily="monospace">0</text>
-                    <text fill="#0E1116" fontSize="7" opacity="0.6" x="47" y="10" fontFamily="monospace">50</text>
-                    <text fill="#0E1116" fontSize="7" opacity="0.6" x="82" y="77" fontFamily="monospace">100</text>
+                    <circle cx="60" cy="65" fill="#12151B" r="4" />
                   </svg>
-                  <span className="font-mono-data text-[9px] font-bold text-[#0E1116] tracking-widest mt-1">
-                    ACCURACY CALIBRATION
-                  </span>
+                  <div className="text-[10px] font-mono-data text-[#12151B] font-bold tracking-widest mt-0.5">
+                    ACCURACY: {score}%
+                  </div>
+                  <div className="text-[8px] font-mono-data text-[#12151B]/60 tracking-wider uppercase">
+                    CALIBRATED TANK
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Paper Footer Details */}
-            <div className="mt-4 pt-2.5 border-t border-[#0E1116]/15 flex items-center justify-between font-mono-data text-xs text-[#0E1116]/80">
-              <div className="flex items-center gap-1.5 text-[11px]">
-                <span>ATTEMPT DURATION:</span>
-                <span className="font-bold text-[#0E1116]">18M 42S</span>
-                {tabSwitches > 0 && (
-                  <span className="text-[#93000A] font-bold ml-2">
-                    [FG: {tabSwitches} SWITCH(ES)]
-                  </span>
-                )}
+            {/* Micro barcode & auth footer */}
+            <div className="mt-5 pt-2.5 border-t border-[#12151B]/20 flex justify-between items-center text-[10px] font-mono-data text-[#12151B]/70 font-bold">
+              <div className="tracking-tighter font-mono">||||||| | ||||| |||| || |||</div>
+              <span>OFFICIAL TELEMETRY PRINT</span>
+            </div>
+          </article>
+        </div>
+
+        {/* Right: Concentric Elliptical Orbit Diagram ("YOUR ORBIT / BATCH ORBIT") */}
+        <div className="lg:col-span-6">
+          <section className="relative bg-[#161B22] border border-[#8B98A9]/35 p-4 md:p-5 shadow-hard-2 rounded-[2px] reg-mark-card">
+            <div className="flex items-center justify-between border-b border-[#8B98A9]/20 pb-2.5">
+              <div className="flex items-center gap-1.5 font-mono-data">
+                <Orbit size={16} className="text-[#BFE3FF]" />
+                <span className="text-xs font-bold text-[#BFE3FF] tracking-wider uppercase">
+                  YOUR ORBIT / BATCH ORBIT
+                </span>
               </div>
-              <div className={`px-2 py-0.5 rounded font-bold text-[10px] ${isPassed ? 'bg-[#007243]/15 text-[#007243]' : 'bg-[#FF5A1F]/15 text-[#FF5A1F]'}`}>
-                STATUS: {isPassed ? 'CERTIFIED' : 'REVIEW'}
+              <span className="bg-[#3DFFA2]/15 text-[#3DFFA2] text-[10px] font-mono-data px-2 py-0.5 border border-[#3DFFA2]/40 font-bold">
+                {score >= debrief.batchAverage
+                  ? `+${score - debrief.batchAverage} PTS DELTA`
+                  : `${score - debrief.batchAverage} PTS DELTA`}
+              </span>
+            </div>
+
+            {/* Concentric Elliptical Orbit Diagram SVG */}
+            <div className="relative py-2 mt-1 flex flex-col items-center">
+              <svg className="w-full h-36" viewBox="0 0 320 140">
+                {/* Center Core Planet Node */}
+                <circle cx="160" cy="70" fill="#0E1116" r="14" stroke="#3E4652" strokeWidth="1.5" />
+                <circle cx="160" cy="70" fill="#8B98A9" r="4" />
+                <line stroke="#3E4652" strokeDasharray="2,2" strokeWidth="0.75" x1="160" x2="160" y1="35" y2="105" />
+                <line stroke="#3E4652" strokeDasharray="2,2" strokeWidth="0.75" x1="110" x2="210" y1="70" y2="70" />
+
+                {/* Batch Orbit (Dashed Steel #8B98A9) */}
+                <ellipse cx="160" cy="70" fill="none" rx="95" ry="42" stroke="#8B98A9" strokeDasharray="4,4" strokeWidth="1.5" />
+                <circle cx="75" cy="55" fill="#8B98A9" r="4.5" />
+                <line stroke="#8B98A9" strokeWidth="1" x1="75" x2="48" y1="55" y2="35" />
+                <circle cx="48" cy="35" fill="#8B98A9" r="2" />
+
+                {/* Your Orbit (Solid Ice Blue #BFE3FF) */}
+                <ellipse cx="160" cy="70" fill="none" rx="135" ry="54" stroke="#BFE3FF" strokeWidth="2" />
+                <circle cx="265" cy="45" fill="#BFE3FF" r="5.5" />
+                <circle cx="265" cy="45" fill="#0E1116" r="2" />
+                <line stroke="#BFE3FF" strokeWidth="1" x1="265" x2="280" y1="45" y2="25" />
+                <circle cx="280" cy="25" fill="#BFE3FF" r="2" />
+              </svg>
+
+              {/* Instrumented Callout Badges */}
+              <div className="w-full grid grid-cols-2 gap-2 mt-1 font-mono-data">
+                {/* Batch Average Callout */}
+                <div className="bg-[#0E1116] border border-[#3E4652] p-2.5 relative">
+                  <span className="absolute top-1 right-1.5 text-[#8B98A9] text-[9px] font-bold">+</span>
+                  <div className="text-[10px] text-[#8B98A9] uppercase">BATCH AVERAGE</div>
+                  <div className="text-lg font-bold text-[#8B98A9] leading-tight mt-0.5">
+                    {debrief.batchAverage}.0
+                  </div>
+                  <div className="text-[9px] text-[#8B98A9]/80 mt-1 uppercase">
+                    N=420 CADETS // DASHED
+                  </div>
+                </div>
+
+                {/* Your Orbit Callout */}
+                <div className="bg-[#0E1116] border border-[#BFE3FF]/50 p-2.5 relative shadow-hard-2">
+                  <span className="absolute top-1 right-1.5 text-[#BFE3FF] text-[9px] font-bold">+</span>
+                  <div className="text-[10px] text-[#BFE3FF] uppercase font-bold">YOUR ORBIT SCORE</div>
+                  <div className="text-lg font-bold text-[#BFE3FF] leading-tight mt-0.5">
+                    {score}.0
+                  </div>
+                  <div className="text-[9px] text-[#3DFFA2] mt-1 font-bold uppercase">
+                    TOP 34% TIER // SOLID
+                  </div>
+                </div>
               </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      {/* 4. TOPIC PERFORMANCE TELEMETRY MATRIX */}
+      <section className="bg-[#161B22] border border-[#8B98A9]/35 p-4 md:p-5 shadow-hard-2 rounded-[2px] reg-mark-card">
+        <div className="flex items-center justify-between border-b border-[#8B98A9]/20 pb-2.5 mb-3 font-mono-data">
+          <div className="flex items-center gap-2">
+            <span className="text-[#3DFFA2] text-xs font-bold">+</span>
+            <h2 className="text-xs font-bold text-[#E1E2E9] tracking-widest uppercase">
+              TOPIC TELEMETRY MATRIX
+            </h2>
+          </div>
+          <span className="text-[10px] text-[#8B98A9]">ACCURACY_PCT</span>
+        </div>
+
+        <div className="space-y-4 font-mono-data">
+          {/* 1. SQL Basics - 83% */}
+          <div>
+            <div className="flex justify-between items-center text-xs mb-1.5">
+              <span className="font-bold text-[#E1E2E9]">SQL Basics</span>
+              <span className="font-bold text-[#3DFFA2]">83% [NOMINAL]</span>
+            </div>
+            <div className="h-3 w-full bg-[#0E1116] border border-[#3E4652] p-0.5 flex gap-1">
+              <div className="h-full bg-[#3DFFA2] w-[83%]"></div>
+              <div className="h-full bg-[#1F2630] flex-1"></div>
+            </div>
+          </div>
+
+          {/* 2. Joins - 50% (Amber Weak Area) */}
+          <div className="bg-[#FFB547]/10 border border-[#FFB547]/40 p-3 rounded-[2px]">
+            <div className="flex justify-between items-center text-xs mb-1.5">
+              <span className="font-bold text-[#FFB547] flex items-center gap-2">
+                Joins
+                <span className="bg-[#FFB547] text-[#0E1116] text-[9px] px-1.5 py-0.5 font-bold uppercase leading-none inline-block">
+                  ⚠ WEAK AREA
+                </span>
+              </span>
+              <span className="font-bold text-[#FFB547]">50% [CAUTION]</span>
+            </div>
+            <div className="h-3 w-full bg-[#0E1116] border border-[#FFB547]/60 p-0.5 flex gap-1">
+              <div className="h-full bg-[#FFB547] w-[50%]"></div>
+              <div className="h-full bg-[#1F2630] flex-1"></div>
+            </div>
+            <p className="text-[11px] text-[#FFB547]/90 mt-2 font-mono-data">
+              Latent mismatch identified on OUTER/CROSS mechanics.
+            </p>
+          </div>
+
+          {/* 3. Aggregation - 67% */}
+          <div>
+            <div className="flex justify-between items-center text-xs mb-1.5">
+              <span className="font-bold text-[#E1E2E9]">Aggregation</span>
+              <span className="font-bold text-[#BFE3FF]">67% [STABLE]</span>
+            </div>
+            <div className="h-3 w-full bg-[#0E1116] border border-[#3E4652] p-0.5 flex gap-1">
+              <div className="h-full bg-[#BFE3FF] w-[67%]"></div>
+              <div className="h-full bg-[#1F2630] flex-1"></div>
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Right: Dual Orbit Radar Diagram SVG (YOUR ORBIT / BATCH ORBIT) */}
-        <div className="lg:col-span-6">
-          <PanelCard
-            eyebrow="ORBITAL_METRICS // BATCH DYNAMICS"
-            title="YOUR ORBIT / BATCH ORBIT"
-            status={
-              <span className="font-mono-data text-xs text-[#3DFFA2] font-bold">
-                {score >= debrief.batchAverage
-                  ? `+${(score - debrief.batchAverage).toFixed(1)} PTS ABOVE BATCH`
-                  : `${(score - debrief.batchAverage).toFixed(1)} PTS BELOW BATCH`}
-              </span>
-            }
-          >
-            {/* Dual Orbit Radar Diagram SVG */}
-            <div className="relative flex flex-col items-center justify-center py-1">
-              <svg className="w-full h-36" viewBox="0 0 320 140">
-                {/* Reticle Grid & Radial axes */}
-                <line stroke="#849587" strokeDasharray="2,3" strokeOpacity="0.3" strokeWidth="0.5" x1="20" x2="300" y1="70" y2="70" />
-                <line stroke="#849587" strokeDasharray="2,3" strokeOpacity="0.3" strokeWidth="0.5" x1="160" x2="160" y1="10" y2="130" />
-                <circle cx="160" cy="70" fill="none" r="55" stroke="#849587" strokeOpacity="0.25" strokeWidth="0.75" />
-
-                {/* Cohort Orbit Ring (Score 68) */}
-                <ellipse cx="160" cy="70" fill="none" rx="90" ry="42" stroke="#bacbbc" strokeDasharray="4, 3" strokeOpacity="0.5" strokeWidth="1.2" />
-                {/* Cohort Position Marker */}
-                <g transform="translate(230, 52)">
-                  <circle cx="0" cy="0" fill="#bacbbc" r="3" />
-                  <line stroke="#bacbbc" strokeWidth="0.75" x1="0" x2="0" y1="-3" y2="-16" />
-                  <text fill="#bacbbc" fontSize="9" fontWeight="600" x="4" y="-12" fontFamily="monospace">BATCH AVG: {debrief.batchAverage}</text>
-                </g>
-
-                {/* User Orbit Path */}
-                <ellipse cx="160" cy="70" fill="none" rx="115" ry="52" stroke="#3DFFA2" strokeWidth="1.8" />
-                {/* User Beacon Marker */}
-                <g transform="translate(250, 42)">
-                  <circle cx="0" cy="0" fill="#3DFFA2" r="4.5" className="animate-pulse" />
-                  <circle cx="0" cy="0" fill="none" opacity="0.6" r="8" stroke="#3DFFA2" strokeWidth="0.8" />
-                  <line stroke="#3DFFA2" strokeWidth="1" x1="0" x2="0" y1="-8" y2="-22" />
-                  <text fill="#3DFFA2" fontSize="10" fontWeight="700" x="5" y="-16" fontFamily="monospace">CADET-784: {score}</text>
-                </g>
-
-                {/* Center Celestial Origin */}
-                <circle cx="160" cy="70" fill="#191c21" r="8" stroke="#3DFFA2" strokeWidth="1" />
-                <circle cx="160" cy="70" fill="#3DFFA2" r="2.5" />
-                <text fill="#849587" fontSize="7" letterSpacing="1" textAnchor="middle" x="160" y="86" fontFamily="monospace">ORIGIN_VEC</text>
-              </svg>
-            </div>
-
-            {/* Orbit Readouts Bar */}
-            <div className="grid grid-cols-2 gap-2 mt-2 bg-[#101d2a] p-2.5 rounded-[2px] font-mono-data">
-              <div>
-                <span className="text-[9px] text-[#8B98A9] uppercase block">RELATIVE APOGEE</span>
-                <span className="text-xs text-[#3DFFA2] font-bold">
-                  {score >= debrief.batchAverage
-                    ? `+${(score - debrief.batchAverage).toFixed(1)} PTS ABOVE MEDIAN`
-                    : `${(score - debrief.batchAverage).toFixed(1)} PTS BELOW MEDIAN`}
-                </span>
-              </div>
-              <div>
-                <span className="text-[9px] text-[#8B98A9] uppercase block">COHORT TRAJECTORY</span>
-                <span className="text-xs text-white font-bold">
-                  {score >= 70 ? 'TOP 28TH PERCENTILE' : 'NOMINAL COHORT BAND'}
-                </span>
-              </div>
-            </div>
-          </PanelCard>
+      {/* 5. TIMING TELEMETRY PANEL (CHRONOMETER READOUT) */}
+      <section className="bg-[#161B22] border border-[#8B98A9]/35 p-4 md:p-5 shadow-hard-2 rounded-[2px] reg-mark-card">
+        <div className="flex items-center justify-between border-b border-[#8B98A9]/20 pb-2 mb-3 font-mono-data">
+          <div className="flex items-center gap-1.5">
+            <Timer size={15} className="text-[#FFB547]" />
+            <span className="text-xs font-bold text-[#E1E2E9] tracking-wider uppercase">
+              CHRONOMETER READOUT
+            </span>
+          </div>
+          <span className="text-[10px] text-[#8B98A9]">DELTA: +01:04</span>
         </div>
-      </div>
 
-      {/* 3. TOPIC BREAKDOWN & LATENCY OSCILLOSCOPE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Topic Breakdown Bars */}
-        <div className="lg:col-span-6">
-          <PanelCard
-            eyebrow="MOD_DIAGNOSTICS // VECTORS"
-            title="Topic Breakdown"
-            status={<StatusStamp label="3 VECTORS MONITORED" tone="steel" />}
-          >
-            {/* Track Tick Scale */}
-            <div className="flex justify-between px-0.5 text-[#8B98A9] text-[9px] font-mono-data mb-2 select-none">
-              <span>0%</span>
-              <span>25%</span>
-              <span>50%</span>
-              <span>75%</span>
-              <span>100%</span>
+        <div className="bg-[#0E1116] border border-[#3E4652] p-3.5">
+          <p className="font-mono-data text-xs md:text-sm text-[#E1E2E9] leading-relaxed">
+            Question 04 took <span className="text-[#FFB547] font-bold">01:42</span> — slower than your median of <span className="text-[#3DFFA2] font-bold">00:38</span>.
+          </p>
+
+          {/* Visual Pace Timeline with Delta Tick Indicator */}
+          <div className="mt-4 font-mono-data">
+            <div className="flex justify-between text-[10px] text-[#8B98A9] mb-1.5">
+              <span>00:00 (FAST)</span>
+              <span>MEDIAN [00:38]</span>
+              <span>02:00 (SLOW)</span>
             </div>
 
-            <div className="space-y-3 font-mono-data">
-              {/* Topic 1: SQL Basics (83%) */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-white font-medium">SQL Basics</span>
-                  <span className="text-[#3DFFA2] font-bold">83% [PASS]</span>
-                </div>
-                <div className="h-3 w-full bg-[#030f1c] rounded-[1px] overflow-hidden p-0.5 border border-[#8B98A9]/20">
-                  <div className="h-full bg-[#3DFFA2] rounded-[1px]" style={{ width: '83%' }}></div>
-                </div>
+            {/* Scale Line with Markers */}
+            <div className="relative h-4 bg-[#191C21] border border-[#3E4652] w-full flex items-center">
+              <div className="absolute inset-0 flex justify-between px-2 pointer-events-none opacity-40">
+                <span className="text-[8px] text-[#8B98A9]">|</span>
+                <span className="text-[8px] text-[#8B98A9]">|</span>
+                <span className="text-[8px] text-[#8B98A9]">|</span>
+                <span className="text-[8px] text-[#8B98A9]">|</span>
               </div>
+              {/* Median Benchmark Marker (~31%) */}
+              <div className="absolute left-[31%] top-0 bottom-0 w-1 bg-[#3DFFA2] z-10"></div>
+              {/* Q04 Latency Spike Marker (~85%) */}
+              <div className="absolute left-[85%] -top-1 -bottom-1 w-2.5 bg-[#FFB547] border border-[#0E1116] z-20"></div>
+            </div>
 
-              {/* Topic 2: Joins (50% - WEAK AREA) */}
-              <div className="space-y-1.5 bg-[#1e2b39]/60 p-2.5 rounded-[2px] border border-[#FFB547]/30">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-1.5">
-                    <AlertTriangle size={14} className="text-[#FFB547]" />
-                    <span className="text-[#FFB547] font-bold">Joins</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[#FFB547] font-bold">50%</span>
-                    <span className="bg-[#FFB547]/20 text-[#FFB547] px-1.5 py-0.2 rounded text-[9px] font-bold uppercase">
-                      WEAK AREA
+            <div className="flex justify-between text-[10px] text-[#8B98A9] mt-2">
+              <span className="text-[#3DFFA2] font-bold">▲ Your Benchmark</span>
+              <span className="text-[#FFB547] font-bold">▲ Q04 Latency Spike</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. PAPER RECOMMENDATION CARD (#F2EBDD printed directive) */}
+      <section className="bg-[#F2EBDD] text-[#12151B] p-5 shadow-paper border border-[#12151B]/40 rounded-[2px] relative font-mono-data">
+        <div className="border-b border-[#12151B]/20 pb-2 flex justify-between items-center text-[10px]">
+          <span className="tracking-widest font-bold uppercase">
+            MISSION DIRECTIVE // ADVISORY NOTE
+          </span>
+          <span className="text-[#12151B]/70">DISPATCH #88</span>
+        </div>
+
+        <div className="mt-3 space-y-3">
+          <div className="bg-[#12151B]/5 border-l-2 border-[#12151B] p-2.5">
+            <p className="text-sm font-bold leading-snug text-[#12151B]">
+              DIRECTIVE: Review SQL joins, then retry a short practice set.
+            </p>
+          </div>
+
+          {/* Dispatch Interactive Checklist */}
+          <div className="space-y-2 pt-1 text-xs text-[#12151B]">
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={checklist.audit}
+                onChange={(e) => setChecklist({ ...checklist, audit: e.target.checked })}
+                className="w-3.5 h-3.5 rounded-none border-[#12151B] text-[#FF5A1F] focus:ring-0 bg-[#F2EBDD]"
+              />
+              <span className={checklist.audit ? 'line-through opacity-70' : 'font-semibold'}>
+                Audit Question 04 Venn mechanics
+              </span>
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={checklist.drill}
+                onChange={(e) => setChecklist({ ...checklist, drill: e.target.checked })}
+                className="w-3.5 h-3.5 rounded-none border-[#12151B] text-[#FF5A1F] focus:ring-0 bg-[#F2EBDD]"
+              />
+              <span className={checklist.drill ? 'line-through opacity-70' : 'font-semibold'}>
+                Execute 5-question Join Drill (Module J-2)
+              </span>
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={checklist.pacing}
+                onChange={(e) => setChecklist({ ...checklist, pacing: e.target.checked })}
+                className="w-3.5 h-3.5 rounded-none border-[#12151B] text-[#FF5A1F] focus:ring-0 bg-[#F2EBDD]"
+              />
+              <span className={checklist.pacing ? 'line-through opacity-70' : 'font-semibold'}>
+                Re-verify aggregate group pacing
+              </span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      {/* 7. ITEMIZED AUDIT LOG */}
+      <section className="bg-[#161B22] border border-[#8B98A9]/35 p-4 md:p-5 shadow-hard-2 rounded-[2px] reg-mark-card">
+        <div className="flex items-center justify-between border-b border-[#8B98A9]/20 pb-2.5 mb-3 font-mono-data">
+          <span className="text-xs font-bold text-[#E1E2E9] tracking-wider uppercase">
+            ITEMIZED AUDIT LOG
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowAllQuestions(!showAllQuestions)}
+            className="text-[10px] text-[#3DFFA2] hover:underline flex items-center gap-1 cursor-pointer"
+          >
+            <span>{showAllQuestions ? 'SHOW SUMMARY [3]' : 'VIEW ALL [12 ITEMS]'}</span>
+            {showAllQuestions ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+          </button>
+        </div>
+
+        {/* Primary 3 Highlight Items */}
+        {!showAllQuestions ? (
+          <div className="space-y-3 font-mono-data">
+            {keyAuditItems.map((item) => (
+              <div
+                key={item.id}
+                className={`p-3 rounded-[2px] ${
+                  item.isCorrect
+                    ? 'bg-[#0E1116] border border-[#3DFFA2]/40'
+                    : 'bg-[#0E1116] border-2 border-[#FFB547] shadow-hard-2'
+                }`}
+              >
+                <div className="flex justify-between items-center text-xs mb-1">
+                  <span className={`font-bold ${item.isCorrect ? 'text-[#E1E2E9]' : 'text-[#FFB547]'}`}>
+                    {item.id} // {item.code}
+                  </span>
+                  <span
+                    className={`font-bold flex items-center gap-1 text-[11px] ${
+                      item.isCorrect ? 'text-[#3DFFA2]' : 'text-[#FF5A1F]'
+                    }`}
+                  >
+                    {item.isCorrect ? <Check size={13} /> : <X size={13} />}
+                    {item.status}
+                  </span>
+                </div>
+
+                <div className="text-xs space-y-0.5 text-[#8B98A9]">
+                  <div>
+                    SELECTED:{' '}
+                    <span className={item.isCorrect ? 'text-[#3DFFA2]' : 'text-[#FF5A1F] font-bold'}>
+                      {item.selected}
                     </span>
                   </div>
-                </div>
-                <div className="h-3 w-full bg-[#030f1c] rounded-[1px] overflow-hidden p-0.5 relative border border-[#8B98A9]/20">
-                  <div className="h-full bg-[#FFB547] rounded-[1px] relative" style={{ width: '50%' }}>
-                    <div
-                      className="absolute inset-0 opacity-25"
-                      style={{
-                        backgroundImage:
-                          'repeating-linear-gradient(45deg, #000 0px, #000 2px, transparent 2px, transparent 6px)',
-                      }}
-                    ></div>
+                  <div>
+                    KEY: <span className="text-[#3DFFA2] font-bold">{item.key}</span>
                   </div>
                 </div>
-                <div className="flex items-center justify-between text-[#8B98A9] text-[10px]">
-                  <span>FAIL VECTOR: MULTI-TABLE ALIASING</span>
-                  <span className="text-[#FFB547] font-bold">-18% VS TARGET</span>
+
+                <div className="mt-2 pt-1.5 border-t border-[#1F2630] flex justify-between text-[10px] text-[#8B98A9]">
+                  <span className={item.latencySpike ? 'text-[#FFB547] font-bold' : ''}>
+                    TIME: {item.time}
+                  </span>
+                  <span>TOPIC: {item.topic}</span>
                 </div>
               </div>
-
-              {/* Topic 3: Aggregation (67%) */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-white font-medium">Aggregation</span>
-                  <span className="text-[#3DFFA2] font-bold">67% [STABLE]</span>
-                </div>
-                <div className="h-3 w-full bg-[#030f1c] rounded-[1px] overflow-hidden p-0.5 border border-[#8B98A9]/20">
-                  <div className="h-full bg-[#3DFFA2] rounded-[1px]" style={{ width: '67%' }}></div>
-                </div>
-              </div>
-            </div>
-          </PanelCard>
-        </div>
-
-        {/* Latency & Oscilloscope Trace Strip SVG */}
-        <div className="lg:col-span-6 space-y-4">
-          <PanelCard
-            eyebrow="TIME_SERIES // 1HZ SAMPLING"
-            title="Latency & Oscilloscope Trace"
-            status={<StatusStamp label="ANOMALY FLAGGED" tone="amber" />}
-          >
-            {/* Timeline Trace Strip SVG */}
-            <div className="relative bg-[#030f1c] p-2 rounded-[2px] border border-[#8B98A9]/30 overflow-hidden">
-              <svg className="w-full h-16" viewBox="0 0 300 70">
-                <line stroke="#3b4a3f" strokeDasharray="3,3" strokeWidth="0.5" x1="0" x2="300" y1="18" y2="18" />
-                <line stroke="#3b4a3f" strokeDasharray="3,3" strokeWidth="0.5" x1="0" x2="300" y1="36" y2="36" />
-                <line stroke="#3b4a3f" strokeDasharray="3,3" strokeWidth="0.5" x1="0" x2="300" y1="54" y2="54" />
-                {/* Target median baseline (38s) */}
-                <line stroke="#849587" strokeDasharray="4,2" strokeWidth="1" x1="0" x2="300" y1="46" y2="46" />
-                <text fill="#849587" fontSize="8" textAnchor="end" x="295" y="44" fontFamily="monospace">MEDIAN 00:38</text>
-                {/* Oscilloscope wave */}
-                <polyline
-                  fill="none"
-                  points="10,48 35,46 60,49 85,45 110,47 135,14 160,44 185,46 210,48 235,45 260,47 285,46"
-                  stroke="#3DFFA2"
-                  strokeWidth="1.75"
-                />
-                {/* Question 04 Spike Alert Node */}
-                <circle cx="135" cy="14" fill="#FFB547" r="4.5" className="animate-pulse" />
-                <circle cx="135" cy="14" fill="none" r="8" stroke="#FFB547" strokeDasharray="2,2" strokeWidth="1" />
-                <text fill="#FFB547" fontSize="8" fontWeight="700" textAnchor="middle" x="135" y="9" fontFamily="monospace">Q04 SPIKE (01:42)</text>
-              </svg>
-            </div>
-
-            {/* Spike Telemetry Callout Box */}
-            <div className="flex items-start gap-2.5 mt-3 bg-[#1e2b39] p-2.5 rounded-[2px] text-xs font-mono-data border border-[#FFB547]/30">
-              <Clock size={16} className="text-[#FFB547] shrink-0 mt-0.5" />
-              <div>
-                <span className="text-[#FFB547] font-bold block uppercase text-[10px]">
-                  COGNITIVE STALL IDENTIFIED
-                </span>
-                <p className="text-[#d6e4f6] text-[11px] mt-0.5 leading-snug">
-                  <strong className="text-white">Question 04</strong> took <span className="text-[#FFB547] font-bold">01:42</span> — significantly slower than your median response cadence of <span className="text-[#3DFFA2] font-bold">00:38</span>.
-                </p>
-              </div>
-            </div>
-          </PanelCard>
-
-          {/* Paper Recommendation Card (Flight Instructor Memo) */}
-          <BriefingCard
-            eyebrow="DIRECTIVE // FLIGHT INSTRUCTOR MEMO"
-            title="Weak Areas to Revisit"
-            docId="MEMO_REF: #404-J"
-            stamp={<StatusStamp label="DIRECTIVE" tone="paper" />}
-          >
-            <div className="space-y-2 font-mono-data text-xs text-[#0E1116]">
-              <p className="font-bold text-sm">
-                &gt; "Review SQL joins, then retry a short practice set."
-              </p>
-              <p className="text-[11px] text-[#0E1116]/80 leading-relaxed font-sans">
-                Syntactic confusion detected between Cartesian products and multi-table filtering. A focused 5-minute practice session will stabilize orbit before Flight Ops Exam II.
-              </p>
-              <button
-                type="button"
-                onClick={() => navigate('/resume-lab')}
-                className="mt-2 w-full bg-[#0E1116] hover:bg-[#1a202c] text-[#F2EBDD] font-mono-data text-xs font-bold uppercase py-2 px-3 rounded-[2px] flex items-center justify-center gap-2 cursor-pointer transition-colors"
+            ))}
+          </div>
+        ) : (
+          /* Full 12 Questions View */
+          <div className="space-y-3 font-mono-data">
+            {sampleTestQuestions.map((q, idx) => (
+              <div
+                key={q.id}
+                className="bg-[#0E1116] border border-[#8B98A9]/25 p-3 rounded-[2px] space-y-1.5 text-xs"
               >
-                <span>Launch Joins Module Drill</span>
-                <span className="text-[#3DFFA2]">-&gt;</span>
-              </button>
-            </div>
-          </BriefingCard>
-        </div>
-      </div>
-
-      {/* 4. QUESTION REVIEW LOG (DETAILED INSPECTION MATRIX) */}
-      <PanelCard
-        eyebrow="LOG_INSPECTION // POST-SUBMIT AUDIT"
-        title="Question Review Log & Answer Keys"
-        status={<StatusStamp label="UNLOCKED POST-TEST" tone="steel" />}
-      >
-        <div className="space-y-3 font-mono-data text-xs">
-          {reviewQuestions.map((q) => (
-            <div
-              key={q.id}
-              className={`p-3 rounded-[2px] space-y-1.5 border ${
-                q.isCorrect
-                  ? 'bg-[#101d2a] border-[#8B98A9]/20'
-                  : 'bg-[#1e2b39] border-[#FF5A1F]/30'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`w-2 h-2 rounded-full ${
-                      q.isCorrect ? 'bg-[#3DFFA2]' : 'bg-[#FF5A1F]'
-                    }`}
-                  ></span>
-                  <span className="font-bold text-white">{q.id}</span>
-                  <span className="text-[#8B98A9] text-[11px]">{q.topic}</span>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="font-bold text-[#E1E2E9]">
+                    Q{String(idx + 1).padStart(2, '0')} · {q.text}
+                  </div>
+                  <span className="text-[10px] text-[#8B98A9] bg-[#161B22] px-2 py-0.5 border border-[#8B98A9]/20">
+                    {q.topic}
+                  </span>
                 </div>
-                <span
-                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                    q.isCorrect
-                      ? 'text-[#3DFFA2] bg-[#3DFFA2]/10'
-                      : 'text-[#FF5A1F] bg-[#FF5A1F]/15'
-                  }`}
-                >
-                  [{q.status}]
-                </span>
+                <div className="text-[#3DFFA2] flex items-center gap-1.5 font-bold pt-1">
+                  <Check size={13} />
+                  <span>KEY: {q.options[q.correctIndex]}</span>
+                </div>
+                <div className="text-[11px] text-[#8B98A9] bg-[#161B22] p-2 border-l-2 border-[#BFE3FF]">
+                  {q.explanation}
+                </div>
               </div>
+            ))}
+          </div>
+        )}
+      </section>
 
-              <p className="text-[#d6e4f6] text-[11px] font-sans">{q.text}</p>
-
-              {q.isCorrect ? (
-                <div className="flex items-center gap-2 text-[11px] pt-1 text-[#8B98A9]">
-                  <span>SELECTED: <strong className="text-[#3DFFA2]">{q.selected}</strong></span>
-                  <span>•</span>
-                  <span>VALIDATED: <strong className="text-[#3DFFA2]">{q.validated}</strong></span>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-0.5 text-[11px] pt-1 bg-[#030f1c] p-2 rounded-[2px]">
-                  {q.latency && (
-                    <div className="flex justify-between items-center text-[#8B98A9] text-[10px] pb-1 border-b border-[#8B98A9]/20">
-                      <span>LATENCY: <strong className="text-[#FFB547]">{q.latency}</strong> (LIMIT: {q.limit})</span>
-                      <span className="text-[#FF5A1F] font-bold">DELTA: {q.delta}</span>
-                    </div>
-                  )}
-                  <span className="text-[#FF5A1F]">USER INPUT: {q.selected}</span>
-                  <span className="text-[#3DFFA2]">FLIGHT KEY: {q.validated}</span>
-                </div>
-              )}
-            </div>
-          ))}
+      {/* 8. INTERACTIVE FLIGHT-OPS CONSOLE SIMULATION MODES */}
+      <section className="bg-[#161B22] border border-[#8B98A9]/35 p-4 shadow-hard-2 rounded-[2px] font-mono-data">
+        <div className="flex items-center justify-between border-b border-[#8B98A9]/20 pb-2 mb-3">
+          <span className="text-[10px] text-[#8B98A9] uppercase tracking-wider font-bold">
+            CONSOLE SIMULATION MODES
+          </span>
+          <span className="text-[9px] text-[#8B98A9]">[TOGGLE VIEW]</span>
         </div>
-      </PanelCard>
 
-      {/* 5. MAIN CTA RETURN TO MISSION CONTROL */}
-      <div className="pt-2">
+        <div className="flex gap-2 mb-3">
+          <button
+            type="button"
+            onClick={() => setSimulationState('normal')}
+            className={`flex-1 py-1.5 text-xs font-bold border transition-all cursor-pointer ${
+              simulationState === 'normal'
+                ? 'border-[#3DFFA2] bg-[#3DFFA2]/15 text-[#3DFFA2]'
+                : 'border-[#3E4652] bg-[#0E1116] text-[#8B98A9] hover:text-white'
+            }`}
+          >
+            NORMAL
+          </button>
+          <button
+            type="button"
+            onClick={() => setSimulationState('loading')}
+            className={`flex-1 py-1.5 text-xs font-bold border transition-all cursor-pointer ${
+              simulationState === 'loading'
+                ? 'border-[#BFE3FF] bg-[#BFE3FF]/15 text-[#BFE3FF]'
+                : 'border-[#3E4652] bg-[#0E1116] text-[#8B98A9] hover:text-white'
+            }`}
+          >
+            BUSY STATE
+          </button>
+          <button
+            type="button"
+            onClick={() => setSimulationState('error')}
+            className={`flex-1 py-1.5 text-xs font-bold border transition-all cursor-pointer ${
+              simulationState === 'error'
+                ? 'border-[#FFB547] bg-[#FFB547]/15 text-[#FFB547]'
+                : 'border-[#3E4652] bg-[#0E1116] text-[#8B98A9] hover:text-white'
+            }`}
+          >
+            NET WARN
+          </button>
+        </div>
+
+        {/* Dynamic State Container */}
+        <div>
+          {simulationState === 'normal' && (
+            <div className="p-3 bg-[#0E1116] border border-[#3E4652] text-xs text-[#3DFFA2] flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#3DFFA2] inline-block"></span>
+                <span>TELEMETRY STREAM LINKED</span>
+              </span>
+              <span className="text-[#8B98A9]">LATENCY: 18ms</span>
+            </div>
+          )}
+
+          {simulationState === 'loading' && (
+            <div className="p-3 bg-[#0E1116] border border-[#BFE3FF] space-y-2.5">
+              <div className="flex items-center gap-2 text-[#BFE3FF] text-xs">
+                <span className="inline-block w-3.5 h-3.5 border-2 border-[#BFE3FF] border-t-transparent rounded-full animate-spin"></span>
+                <span>Calculating topic accuracy and batch comparison…</span>
+              </div>
+              <div className="w-full bg-[#191C21] h-1.5 overflow-hidden">
+                <div className="bg-[#BFE3FF] h-full w-1/3 animate-pulse"></div>
+              </div>
+            </div>
+          )}
+
+          {simulationState === 'error' && (
+            <div className="p-3 bg-[#0E1116] border-2 border-[#FFB547] text-[#FFB547] space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-bold">
+                <AlertTriangle size={15} />
+                <span>INSTRUMENT CAUTION // PARTIAL SYNC</span>
+              </div>
+              <p className="text-xs text-[#E1E2E9]">
+                Your score loaded, but the batch comparison is unavailable.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 9. MAIN CTA BUTTON (Tactile Signal Orange Action) */}
+      <section className="pt-2 pb-6 font-mono-data">
         <button
           type="button"
           onClick={() => navigate('/mission-control')}
-          className="w-full bg-[#FF5A1F] hover:bg-[#e04e18] text-white font-mono-data text-xs md:text-sm font-bold uppercase py-3.5 px-4 rounded-[2px] flex items-center justify-center gap-2 hard-shadow-signal active:translate-y-0.5 transition-transform cursor-pointer"
+          className="w-full py-4 px-4 bg-[#FF5A1F] text-[#0E1116] font-heading font-bold tracking-wider text-sm uppercase border border-[#FF5A1F] shadow-hard-2 hover:bg-white hover:text-[#0E1116] active:translate-x-0.5 active:translate-y-0.5 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
         >
-          <PlaneTakeoff size={18} />
           <span>Return to Mission Control</span>
-          <span className="text-[10px] opacity-80 font-mono ml-1">[&lt;- FLIGHT CONSOLE]</span>
+          <CornerDownLeft size={16} />
         </button>
-        <div className="flex items-center justify-center gap-2 mt-2 text-[#8B98A9] font-mono-data text-[10px]">
-          <span>SESSION HASH: 89f4b-sql-784</span>
-          <span>•</span>
-          <span>APOGEE OS v4.2.1-PROD</span>
+        <div className="text-center mt-2.5">
+          <span className="text-[10px] text-[#8B98A9] tracking-widest uppercase">
+            TRANSMISSION CHANNEL ID: TX-APOGEE-FINAL
+          </span>
         </div>
-      </div>
+      </section>
     </div>
   );
 }

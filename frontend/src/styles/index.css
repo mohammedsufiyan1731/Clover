@@ -142,3 +142,22 @@ body {
 .blink-status {
   animation: blink 1s infinite;
 }
+
+/* Mechanical Shadows & Perforations from Stitch */
+.shadow-hard-2 {
+  box-shadow: 2px 2px 0px 0px #0E1116;
+}
+
+.shadow-hard-3 {
+  box-shadow: 3px 3px 0px 0px #0E1116;
+}
+
+.shadow-paper {
+  box-shadow: 4px 4px 0px 0px #0E1116;
+}
+
+.perf-border {
+  background-image: radial-gradient(#12151B 1.2px, transparent 1.2px);
+  background-size: 8px 8px;
+}
+

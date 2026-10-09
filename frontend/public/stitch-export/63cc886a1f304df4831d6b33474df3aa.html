@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=390, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Apogee // Placement Test Debrief</title>
+<!-- Google Fonts: Space Grotesk, Inter, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-container": "#ff5a1f",
+            "tertiary-fixed": "#ffddb4",
+            "primary-fixed": "#ffdbd0",
+            "on-error": "#690005",
+            "on-tertiary-fixed-variant": "#633f00",
+            "outline-variant": "#5b4038",
+            "surface-dim": "#111319",
+            "error-container": "#93000a",
+            "surface-tint": "#ffb59e",
+            "on-secondary": "#00391f",
+            "surface-container-high": "#272a30",
+            "surface-bright": "#36393f",
+            "primary": "#ffb59e",
+            "on-secondary-fixed": "#002110",
+            "on-tertiary-fixed": "#291800",
+            "on-secondary-fixed-variant": "#00522f",
+            "surface-container": "#1d2025",
+            "surface-container-low": "#191c21",
+            "tertiary": "#ffb955",
+            "primary-fixed-dim": "#ffb59e",
+            "secondary-container": "#03e98f",
+            "surface-variant": "#32353a",
+            "on-tertiary": "#452b00",
+            "on-primary-fixed-variant": "#852400",
+            "on-tertiary-container": "#3e2600",
+            "error": "#ffb4ab",
+            "on-background": "#e1e2e9",
+            "secondary-fixed": "#56ffa7",
+            "secondary": "#8dffba",
+            "background": "#111319",
+            "inverse-on-surface": "#2e3036",
+            "surface-container-lowest": "#0b0e13",
+            "on-primary-container": "#541400",
+            "on-surface": "#e1e2e9",
+            "on-primary": "#5e1700",
+            "on-primary-fixed": "#3a0b00",
+            "secondary-fixed-dim": "#00e38b",
+            "outline": "#ab897f",
+            "surface-container-highest": "#32353a",
+            "tertiary-fixed-dim": "#ffb955",
+            "on-error-container": "#ffdad6",
+            "on-surface-variant": "#e4beb3",
+            "on-secondary-container": "#00633a",
+            "tertiary-container": "#c68414",
+            "inverse-primary": "#ae3200",
+            "surface": "#111319",
+            "inverse-surface": "#e1e2e9"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "gutter-desktop": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-2xl": "3rem",
+            "margin-tablet": "1.5rem",
+            "space-xl": "2rem",
+            "space-2xs": "0.125rem",
+            "margin": "1rem",
+            "margin-desktop": "2.5rem",
+            "gutter": "1rem"
+          },
+          "fontFamily": {
+            "headline-md": ["Space Grotesk"],
+            "headline-lg-mobile": ["Space Grotesk"],
+            "display-hero-mobile": ["Space Grotesk"],
+            "body-md": ["Inter"],
+            "telemetry-lg": ["JetBrains Mono"],
+            "headline-lg": ["Space Grotesk"],
+            "label-caps": ["JetBrains Mono"],
+            "telemetry-md": ["JetBrains Mono"],
+            "display-hero": ["Space Grotesk"],
+            "body-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "timecode": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "headline-lg-mobile": ["24px", { "lineHeight": "30px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "display-hero-mobile": ["32px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "telemetry-lg": ["24px", { "lineHeight": "28px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-lg": ["32px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+            "label-caps": ["11px", { "lineHeight": "14px", "letterSpacing": "0.12em", "fontWeight": "700" }],
+            "telemetry-md": ["14px", { "lineHeight": "18px", "letterSpacing": "0.04em", "fontWeight": "500" }],
+            "display-hero": ["48px", { "lineHeight": "52px", "letterSpacing": "-0.03em", "fontWeight": "700" }],
+            "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "400" }],
+            "timecode": ["12px", { "lineHeight": "16px", "letterSpacing": "0.08em", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    /* CRT Scanline Overlay */
+    .crt-overlay {
+      background-image: repeating-linear-gradient(
+        0deg,
+        rgba(14, 17, 22, 0) 0px,
+        rgba(14, 17, 22, 0) 2px,
+        rgba(0, 0, 0, 0.35) 3px,
+        rgba(0, 0, 0, 0.35) 4px
+      );
+      pointer-events: none;
+    }
+    /* Hard Mechanical Shadows */
+    .shadow-hard-2 {
+      box-shadow: 2px 2px 0px 0px #0E1116;
+    }
+    .shadow-hard-3 {
+      box-shadow: 3px 3px 0px 0px #0E1116;
+    }
+    .shadow-paper {
+      box-shadow: 4px 4px 0px 0px #0E1116;
+    }
+    /* Dot Matrix Perforation */
+    .perf-border {
+      background-image: radial-gradient(#12151B 1.2px, transparent 1.2px);
+      background-size: 8px 8px;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#0E1116] text-on-surface antialiased font-body-md min-h-screen relative flex flex-col items-center justify-start pb-20 select-none overflow-x-hidden">
+<!-- Ambient CRT Scanline Overlay -->
+<div class="fixed inset-0 crt-overlay z-40 pointer-events-none"></div>
+<!-- Mobile Viewport Shell (Constraint ~390px) -->
+<div class="w-full max-w-[412px] bg-[#0E1116] flex flex-col min-h-screen relative border-x border-[#242B35]">
+<!-- SHARED COMPONENT: TopAppBar (Docked Small Type) -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-lowest text-primary dark:text-primary docked full-width top-0 rounded-none border-b border-surface-container-highest dark:border-surface-container-highest flex justify-between items-center w-full px-4 h-12 sticky z-30">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#8B98A9]">terminal</span>
+<span class="text-headline-md font-headline-md font-semibold tracking-wider text-on-surface dark:text-on-surface text-[15px] leading-none">APOGEE // FLIGHT-OPS</span>
+</div>
+<div class="flex items-center gap-2 bg-[#161B22] border border-[#3E4652] px-2 py-1">
+<span class="w-2 h-2 rounded-full bg-[#3DFFA2] animate-pulse"></span>
+<span class="text-timecode font-timecode text-[10px] text-[#BFE3FF] tracking-tight">UTC 2025-05-18 14:32:09</span>
+</div>
+</header>
+<!-- Sub-Telemetry Registration Ribbon -->
+<div class="flex items-center justify-between px-4 py-1 bg-[#161B22] border-b border-[#242B35] text-[10px] font-label-caps text-[#8B98A9]">
+<div class="flex items-center gap-1.5">
+<span class="text-[#3DFFA2] font-bold">+</span>
+<span>SYS: PLACEMENT-DEBRIEF</span>
+</div>
+<div class="flex items-center gap-2">
+<span>CHNL // 04-A</span>
+<span class="text-[#8B98A9] font-bold">+</span>
+</div>
+</div>
+<!-- MAIN SCROLLABLE MISSION CANVAS -->
+<main class="flex-1 px-3.5 py-4 space-y-4">
+<!-- SECTION 2: DEBRIEF HEADER & RUBBER STAMP -->
+<section class="relative bg-[#161B22] border border-[#242B35] p-3.5 shadow-hard-2">
+<!-- Mechanical Registration Marks -->
+<span class="absolute -top-1.5 -left-1.5 text-[10px] text-[#8B98A9] font-bold leading-none select-none">+</span>
+<span class="absolute -top-1.5 -right-1.5 text-[10px] text-[#8B98A9] font-bold leading-none select-none">+</span>
+<span class="absolute -bottom-1.5 -left-1.5 text-[10px] text-[#8B98A9] font-bold leading-none select-none">+</span>
+<span class="absolute -bottom-1.5 -right-1.5 text-[10px] text-[#8B98A9] font-bold leading-none select-none">+</span>
+<div class="flex items-start justify-between">
+<div>
+<div class="text-label-caps font-label-caps text-[#8B98A9] text-[10px] tracking-widest flex items-center gap-1">
+<span class="w-1.5 h-1.5 bg-[#FF5A1F] inline-block"></span>
+              DEBRIEF // TEST ATTEMPT
+            </div>
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile text-[#E1E2E9] mt-0.5 tracking-tight font-bold">SQL Fundamentals Check</h1>
+<p class="text-timecode font-timecode text-[11px] text-[#8B98A9] mt-1">SESSION_UID: FL-9041-KILO-09</p>
+</div>
+<!-- Rubber Stamp Badge (Angled -4deg) -->
+<div class="transform -rotate-[4deg] shrink-0 ml-2">
+<div class="border-2 border-[#3DFFA2] bg-[#3DFFA2]/10 px-2 py-1 text-center shadow-sm">
+<div class="text-[9px] font-label-caps text-[#3DFFA2] tracking-wider leading-none">STAMP VALID</div>
+<div class="text-[11px] font-headline-md font-bold text-[#3DFFA2] tracking-normal leading-tight mt-0.5 whitespace-nowrap">DEBRIEF COMPLETE</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: TOP PAPER RESULT CARD (Printed Paper #F2EBDD) -->
+<section class="relative bg-[#F2EBDD] text-[#12151B] p-4 shadow-paper border border-[#12151B]/40">
+<!-- Dot-matrix perforation header border -->
+<div class="absolute top-0 left-0 right-0 h-1.5 perf-border opacity-70"></div>
+<div class="flex justify-between items-center border-b border-[#12151B]/20 pb-2 pt-1">
+<span class="font-label-caps text-label-caps text-[10px] tracking-widest text-[#12151B]/80 font-bold">MANIFEST #SQ-0941 // FLIGHT CADET</span>
+<span class="font-label-caps text-[9px] bg-[#12151B] text-[#F2EBDD] px-1.5 py-0.5 font-bold">ARCHIVE COPY</span>
+</div>
+<div class="mt-3 flex items-center justify-between gap-4">
+<!-- Big Ink Score -->
+<div>
+<div class="text-[10px] font-label-caps text-[#12151B]/70 tracking-wider">AGGREGATE RATING</div>
+<div class="font-headline-lg text-[44px] leading-none font-bold tracking-tight text-[#12151B] mt-1">
+              72 <span class="text-[20px] font-telemetry-md text-[#12151B]/60 font-normal">/ 100</span>
+</div>
+<div class="inline-flex items-center gap-1.5 bg-[#12151B]/10 border border-[#12151B]/30 px-2 py-0.5 mt-2">
+<span class="w-2 h-2 rounded-full bg-[#12151B]"></span>
+<span class="font-telemetry-md text-telemetry-md text-[12px] font-bold text-[#12151B]">9 / 12 correct</span>
+</div>
+</div>
+<!-- Analog Mechanical Accuracy Dial Gauge -->
+<div class="w-32 h-28 relative flex flex-col items-center justify-end">
+<svg class="w-28 h-20" viewbox="0 0 120 70">
+<!-- Gauge Track (Gray arc) -->
+<path d="M 15 65 A 45 45 0 0 1 105 65" fill="none" stroke="#12151B" stroke-linecap="round" stroke-opacity="0.15" stroke-width="6"></path>
+<!-- Segmented Ticks at 10% intervals -->
+<line stroke="#12151B" stroke-width="2" x1="15" x2="22" y1="65" y2="65"></line>
+<line stroke="#12151B" stroke-width="2" x1="22" x2="28" y1="42" y2="45"></line>
+<line stroke="#12151B" stroke-width="2" x1="38" x2="42" y1="24" y2="30"></line>
+<line stroke="#12151B" stroke-width="2" x1="60" x2="60" y1="18" y2="25"></line>
+<line stroke="#12151B" stroke-width="2" x1="82" x2="78" y1="24" y2="30"></line>
+<line stroke="#12151B" stroke-width="2" x1="98" x2="92" y1="42" y2="45"></line>
+<line stroke="#12151B" stroke-width="2" x1="105" x2="98" y1="65" y2="65"></line>
+<!-- Gauge Active Arc (72%) -->
+<path d="M 15 65 A 45 45 0 0 1 97 37" fill="none" stroke="#12151B" stroke-linecap="round" stroke-width="6"></path>
+<!-- Phosphor Needle -->
+<!-- Pivot point 60,65 | 72% corresponds to approx 130 deg span -->
+<polygon fill="#FF5A1F" points="60,63 58,65 92,34 62,65"></polygon>
+<circle cx="60" cy="65" fill="#12151B" r="4"></circle>
+</svg>
+<div class="text-[9px] font-label-caps text-[#12151B] font-bold tracking-widest mt-0.5">ACCURACY: 72%</div>
+<div class="text-[8px] font-label-caps text-[#12151B]/60 tracking-wider">CALIBRATED TANK</div>
+</div>
+</div>
+<!-- Micro barcode & auth stamp footer -->
+<div class="mt-3 pt-2 border-t border-[#12151B]/20 flex justify-between items-center text-[9px] font-label-caps text-[#12151B]/70">
+<div class="flex items-center gap-1 font-mono tracking-tighter text-[11px]">||||||| | ||||| |||| || |||</div>
+<span>OFFICIAL TELEMETRY PRINT</span>
+</div>
+</section>
+<!-- SECTION 4: COMPARISON CARD: "YOUR ORBIT / BATCH ORBIT" -->
+<section class="relative bg-[#161B22] border border-[#242B35] p-3.5 shadow-hard-2">
+<div class="flex items-center justify-between border-b border-[#242B35] pb-2">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[#BFE3FF] text-[16px]">orbit</span>
+<span class="text-label-caps font-label-caps text-[#BFE3FF] text-[11px] tracking-wider">YOUR ORBIT / BATCH ORBIT</span>
+</div>
+<span class="bg-[#3DFFA2]/15 text-[#3DFFA2] text-[10px] font-label-caps px-1.5 py-0.5 border border-[#3DFFA2]/40 font-bold">+4 PTS DELTA</span>
+</div>
+<!-- Concentric Elliptical Orbit Diagram -->
+<div class="relative py-2 mt-1 flex flex-col items-center">
+<svg class="w-full h-36" viewbox="0 0 320 140">
+<!-- Center Reticle / Core Planet Node -->
+<circle cx="160" cy="70" fill="#0E1116" r="14" stroke="#3E4652" stroke-width="1.5"></circle>
+<circle cx="160" cy="70" fill="#8B98A9" r="4"></circle>
+<line stroke="#3E4652" stroke-dasharray="2,2" stroke-width="0.75" x1="160" x2="160" y1="35" y2="105"></line>
+<line stroke="#3E4652" stroke-dasharray="2,2" stroke-width="0.75" x1="110" x2="210" y1="70" y2="70"></line>
+<!-- Batch Orbit (Dashed Steel #8B98A9) -->
+<ellipse cx="160" cy="70" fill="none" rx="95" ry="42" stroke="#8B98A9" stroke-dasharray="4,4" stroke-width="1.5"></ellipse>
+<!-- Batch Satellite Point -->
+<circle cx="75" cy="55" fill="#8B98A9" r="4.5"></circle>
+<line stroke="#8B98A9" stroke-width="1" x1="75" x2="48" y1="55" y2="35"></line>
+<circle cx="48" cy="35" fill="#8B98A9" r="2"></circle>
+<!-- Your Orbit (Solid Ice Blue #BFE3FF) -->
+<ellipse cx="160" cy="70" fill="none" rx="135" ry="54" stroke="#BFE3FF" stroke-width="2"></ellipse>
+<!-- Your Satellite Point (Score 72) -->
+<circle cx="265" cy="45" fill="#BFE3FF" r="5.5"></circle>
+<circle cx="265" cy="45" fill="#0E1116" r="2"></circle>
+<line stroke="#BFE3FF" stroke-width="1" x1="265" x2="280" y1="45" y2="25"></line>
+<circle cx="280" cy="25" fill="#BFE3FF" r="2"></circle>
+</svg>
+<!-- Instrumented Callout Badges with Crosshairs -->
+<div class="w-full grid grid-cols-2 gap-2 mt-1">
+<!-- Batch Average Callout -->
+<div class="bg-[#0E1116] border border-[#3E4652] p-2 relative">
+<span class="absolute top-1 right-1 text-[#8B98A9] text-[9px] font-bold">+</span>
+<div class="text-[10px] font-label-caps text-[#8B98A9]">BATCH AVERAGE</div>
+<div class="text-[18px] font-telemetry-lg text-[#8B98A9] font-bold leading-none mt-1">68.0</div>
+<div class="text-[9px] font-label-caps text-[#8B98A9]/80 mt-1">N=420 CADETS // DASHED</div>
+</div>
+<!-- Your Score Callout -->
+<div class="bg-[#0E1116] border border-[#BFE3FF]/50 p-2 relative shadow-hard-2">
+<span class="absolute top-1 right-1 text-[#BFE3FF] text-[9px] font-bold">+</span>
+<div class="text-[10px] font-label-caps text-[#BFE3FF]">YOUR ORBIT SCORE</div>
+<div class="text-[18px] font-telemetry-lg text-[#BFE3FF] font-bold leading-none mt-1">72.0</div>
+<div class="text-[9px] font-label-caps text-[#3DFFA2] mt-1 font-bold">TOP 34% TIER // SOLID</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: TOPIC PERFORMANCE TELEMETRY -->
+<section class="bg-[#161B22] border border-[#242B35] p-3.5 shadow-hard-2">
+<div class="flex items-center justify-between border-b border-[#242B35] pb-2 mb-3">
+<div class="flex items-center gap-2">
+<span class="text-[#3DFFA2] text-[12px] font-bold">+</span>
+<h2 class="text-label-caps font-label-caps text-[#E1E2E9] text-[11px] tracking-widest">TOPIC TELEMETRY MATRIX</h2>
+</div>
+<span class="text-[10px] font-timecode text-[#8B98A9]">ACCURACY_PCT</span>
+</div>
+<div class="space-y-3.5">
+<!-- 1. SQL Basics - 83% (Phosphor Green) -->
+<div>
+<div class="flex justify-between items-center text-[12px] mb-1">
+<span class="font-telemetry-md font-medium text-[#E1E2E9]">SQL Basics</span>
+<span class="font-telemetry-md font-bold text-[#3DFFA2]">83% [NOMINAL]</span>
+</div>
+<!-- Segmented bar -->
+<div class="h-3 w-full bg-[#0E1116] border border-[#3E4652] p-0.5 flex gap-1">
+<div class="h-full bg-[#3DFFA2] w-[83%]"></div>
+<div class="h-full bg-[#1F2630] flex-1"></div>
+</div>
+</div>
+<!-- 2. Joins - 50% (Amber Warning Area) -->
+<div class="bg-[#FFB547]/5 border border-[#FFB547]/30 p-2">
+<div class="flex justify-between items-center text-[12px] mb-1">
+<span class="font-telemetry-md font-medium text-[#FFB547] flex items-center gap-1.5">
+                Joins
+                <span class="bg-[#FFB547] text-[#0E1116] text-[9px] font-label-caps px-1 py-0.5 font-bold leading-none inline-block">⚠ WEAK AREA</span>
+</span>
+<span class="font-telemetry-md font-bold text-[#FFB547]">50% [CAUTION]</span>
+</div>
+<!-- Segmented bar -->
+<div class="h-3 w-full bg-[#0E1116] border border-[#FFB547]/60 p-0.5 flex gap-1">
+<div class="h-full bg-[#FFB547] w-[50%]"></div>
+<div class="h-full bg-[#1F2630] flex-1"></div>
+</div>
+<p class="text-[10px] font-timecode text-[#FFB547]/90 mt-1.5">Latent mismatch identified on OUTER/CROSS mechanics.</p>
+</div>
+<!-- 3. Aggregation - 67% (Ice Blue) -->
+<div>
+<div class="flex justify-between items-center text-[12px] mb-1">
+<span class="font-telemetry-md font-medium text-[#E1E2E9]">Aggregation</span>
+<span class="font-telemetry-md font-bold text-[#BFE3FF]">67% [STABLE]</span>
+</div>
+<!-- Segmented bar -->
+<div class="h-3 w-full bg-[#0E1116] border border-[#3E4652] p-0.5 flex gap-1">
+<div class="h-full bg-[#BFE3FF] w-[67%]"></div>
+<div class="h-full bg-[#1F2630] flex-1"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: TIMING TELEMETRY PANEL -->
+<section class="bg-[#161B22] border border-[#242B35] p-3.5 shadow-hard-2">
+<div class="flex items-center justify-between border-b border-[#242B35] pb-2 mb-2">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[#FFB547] text-[16px]">timer</span>
+<span class="text-label-caps font-label-caps text-[#E1E2E9] text-[11px] tracking-wider">CHRONOMETER READOUT</span>
+</div>
+<span class="text-[9px] font-label-caps text-[#8B98A9]">DELTA: +01:04</span>
+</div>
+<div class="bg-[#0E1116] border border-[#3E4652] p-2.5 mt-2">
+<p class="text-timecode font-timecode text-[12px] text-[#E1E2E9] leading-relaxed">
+            Question 04 took <span class="text-[#FFB547] font-bold">01:42</span> — slower than your median of <span class="text-[#3DFFA2] font-bold">00:38</span>.
+          </p>
+<!-- Visual Pace Timeline with Delta Tick Indicator -->
+<div class="mt-3">
+<div class="flex justify-between text-[9px] font-label-caps text-[#8B98A9] mb-1">
+<span>00:00 (FAST)</span>
+<span>MEDIAN [00:38]</span>
+<span>02:00 (SLOW)</span>
+</div>
+<!-- Scale line with ticks -->
+<div class="relative h-4 bg-[#191C21] border border-[#3E4652] w-full flex items-center">
+<!-- Baseline Grid Marks -->
+<div class="absolute inset-0 flex justify-between px-2 pointer-events-none opacity-40">
+<span class="text-[8px] text-[#8B98A9] font-mono">|</span>
+<span class="text-[8px] text-[#8B98A9] font-mono">|</span>
+<span class="text-[8px] text-[#8B98A9] font-mono">|</span>
+<span class="text-[8px] text-[#8B98A9] font-mono">|</span>
+</div>
+<!-- Median Marker (approx 31%) -->
+<div class="absolute left-[31%] top-0 bottom-0 w-0.5 bg-[#3DFFA2] z-10"></div>
+<!-- Q04 Latency Marker (approx 85%) -->
+<div class="absolute left-[85%] -top-1 -bottom-1 w-2 bg-[#FFB547] border border-[#0E1116] z-20"></div>
+</div>
+<div class="flex justify-between text-[9px] font-timecode text-[#8B98A9] mt-1">
+<span class="text-[#3DFFA2]">▲ Your Benchmark</span>
+<span class="text-[#FFB547]">▲ Q04 Latency Spike</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 7: PAPER RECOMMENDATION CARD (#F2EBDD) -->
+<section class="bg-[#F2EBDD] text-[#12151B] p-4 shadow-paper border border-[#12151B]/40 relative">
+<div class="border-b border-[#12151B]/20 pb-1.5 flex justify-between items-center">
+<span class="font-label-caps text-[10px] tracking-widest font-bold">MISSION DIRECTIVE // ADVISORY NOTE</span>
+<span class="font-timecode text-[10px] text-[#12151B]/70">DISPATCH #88</span>
+</div>
+<div class="mt-2.5 space-y-2">
+<div class="bg-[#12151B]/5 border-l-2 border-[#12151B] p-2">
+<p class="font-telemetry-md text-[13px] leading-snug font-bold">
+              DIRECTIVE: Review SQL joins, then retry a short practice set.
+            </p>
+</div>
+<!-- Dispatch Checklist -->
+<div class="space-y-1.5 pt-1 text-[12px] font-body-md text-[#12151B]">
+<label class="flex items-start gap-2">
+<input checked="" class="rounded-none border-[#12151B] text-[#FF5A1F] focus:ring-0 mt-0.5 bg-[#F2EBDD]" type="checkbox"/>
+<span class="line-through opacity-70 font-mono text-[11px]">Audit Question 04 Venn mechanics</span>
+</label>
+<label class="flex items-start gap-2">
+<input class="rounded-none border-[#12151B] text-[#FF5A1F] focus:ring-0 mt-0.5 bg-[#F2EBDD]" type="checkbox"/>
+<span class="font-mono text-[11px] font-semibold">Execute 5-question Join Drill (Module J-2)</span>
+</label>
+<label class="flex items-start gap-2">
+<input class="rounded-none border-[#12151B] text-[#FF5A1F] focus:ring-0 mt-0.5 bg-[#F2EBDD]" type="checkbox"/>
+<span class="font-mono text-[11px]">Re-verify aggregate group pacing</span>
+</label>
+</div>
+</div>
+</section>
+<!-- SECTION 8: QUESTION REVIEW ROWS (Itemized Review) -->
+<section class="bg-[#161B22] border border-[#242B35] p-3.5 shadow-hard-2">
+<div class="flex items-center justify-between border-b border-[#242B35] pb-2 mb-2">
+<span class="text-label-caps font-label-caps text-[#E1E2E9] text-[11px] tracking-wider">ITEMIZED AUDIT LOG</span>
+<span class="text-[10px] font-timecode text-[#8B98A9]">SAMPLE [3 / 12]</span>
+</div>
+<div class="space-y-2">
+<!-- Q01 (Correct) -->
+<div class="bg-[#0E1116] border border-[#3DFFA2]/40 p-2.5">
+<div class="flex justify-between items-center text-[11px] font-timecode mb-1">
+<span class="font-bold text-[#E1E2E9]">Q01 // BASIC_FILTER</span>
+<span class="text-[#3DFFA2] font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span> CORRECT
+              </span>
+</div>
+<div class="text-[11px] font-timecode space-y-0.5 text-[#8B98A9]">
+<div>SELECTED: <span class="text-[#3DFFA2]">INNER JOIN</span></div>
+<div>KEY: <span class="text-[#3DFFA2]">INNER JOIN</span></div>
+</div>
+<div class="mt-1 pt-1 border-t border-[#1F2630] flex justify-between text-[9px] font-label-caps text-[#8B98A9]">
+<span>TIME: 00:32</span>
+<span>TOPIC: SQL Basics</span>
+</div>
+</div>
+<!-- Q04 (Incorrect with Caution Highlight) -->
+<div class="bg-[#0E1116] border-2 border-[#FFB547] p-2.5 shadow-hard-2">
+<div class="flex justify-between items-center text-[11px] font-timecode mb-1">
+<span class="font-bold text-[#FFB547]">Q04 // JOIN_CARTESIAN</span>
+<span class="text-[#FF5A1F] font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">close</span> INCORRECT
+              </span>
+</div>
+<div class="text-[11px] font-timecode space-y-0.5">
+<div class="text-[#8B98A9]">SELECTED: <span class="text-[#FF5A1F] font-bold">LEFT OUTER JOIN</span></div>
+<div class="text-[#8B98A9]">KEY: <span class="text-[#3DFFA2] font-bold">CROSS JOIN</span></div>
+</div>
+<div class="mt-1.5 pt-1 border-t border-[#242B35] flex justify-between text-[9px] font-label-caps text-[#FFB547]">
+<span>TIME: 01:42 (LATENCY SPIKE)</span>
+<span>TOPIC: Joins</span>
+</div>
+</div>
+<!-- Q08 (Correct) -->
+<div class="bg-[#0E1116] border border-[#3DFFA2]/40 p-2.5">
+<div class="flex justify-between items-center text-[11px] font-timecode mb-1">
+<span class="font-bold text-[#E1E2E9]">Q08 // GROUP_CLAUSE</span>
+<span class="text-[#3DFFA2] font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check</span> CORRECT
+              </span>
+</div>
+<div class="text-[11px] font-timecode space-y-0.5 text-[#8B98A9]">
+<div>SELECTED: <span class="text-[#3DFFA2]">GROUP BY</span></div>
+<div>KEY: <span class="text-[#3DFFA2]">GROUP BY</span></div>
+</div>
+<div class="mt-1 pt-1 border-t border-[#1F2630] flex justify-between text-[9px] font-label-caps text-[#8B98A9]">
+<span>TIME: 00:41</span>
+<span>TOPIC: Aggregation</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 9: INTERACTIVE FLIGHT-OPS SYSTEM STATES -->
+<section class="bg-[#161B22] border border-[#242B35] p-3.5 shadow-hard-2">
+<div class="flex items-center justify-between border-b border-[#242B35] pb-2 mb-2">
+<span class="text-label-caps font-label-caps text-[#8B98A9] text-[10px] tracking-wider">CONSOLE SIMULATION MODES</span>
+<span class="text-[9px] font-mono text-[#8B98A9]">[TOGGLE VIEW]</span>
+</div>
+<div class="flex gap-2 mb-3">
+<button class="flex-1 py-1 text-[10px] font-label-caps border border-[#3DFFA2] bg-[#3DFFA2]/10 text-[#3DFFA2]" id="btn-state-normal" onclick="switchState('normal')">NORMAL</button>
+<button class="flex-1 py-1 text-[10px] font-label-caps border border-[#3E4652] bg-[#0E1116] text-[#8B98A9]" id="btn-state-loading" onclick="switchState('loading')">BUSY STATE</button>
+<button class="flex-1 py-1 text-[10px] font-label-caps border border-[#3E4652] bg-[#0E1116] text-[#8B98A9]" id="btn-state-error" onclick="switchState('error')">NET WARN</button>
+</div>
+<!-- Dynamic Container -->
+<div id="state-container">
+<!-- Normal State View -->
+<div class="p-2.5 bg-[#0E1116] border border-[#3E4652] text-[11px] font-timecode text-[#3DFFA2] flex items-center justify-between" id="view-normal">
+<span>● TELEMETRY STREAM LINKED</span>
+<span class="text-[#8B98A9]">LATENCY: 18ms</span>
+</div>
+<!-- Loading Simulation State -->
+<div class="hidden p-3 bg-[#0E1116] border border-[#BFE3FF] space-y-2" id="view-loading">
+<div class="flex items-center gap-2 text-[#BFE3FF] text-[11px] font-timecode">
+<span class="inline-block w-3 h-3 border-2 border-[#BFE3FF] border-t-transparent rounded-full animate-spin"></span>
+<span>Calculating topic accuracy and batch comparison…</span>
+</div>
+<!-- Analog Radar Scan Indicator -->
+<div class="w-full bg-[#191C21] h-1.5 overflow-hidden">
+<div class="bg-[#BFE3FF] h-full w-1/3 animate-pulse"></div>
+</div>
+</div>
+<!-- Network Error State -->
+<div class="hidden p-3 bg-[#0E1116] border-2 border-[#FFB547] text-[#FFB547] space-y-1" id="view-error">
+<div class="flex items-center gap-1.5 text-[11px] font-label-caps font-bold">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+<span>INSTRUMENT CAUTION // PARTIAL SYNC</span>
+</div>
+<p class="text-[11px] font-timecode leading-tight text-[#E1E2E9]">
+              Your score loaded, but the batch comparison is unavailable.
+            </p>
+</div>
+</div>
+</section>
+<!-- SECTION 10: MAIN CTA (Tactile Signal Orange Action) -->
+<section class="pt-2 pb-6">
+<button class="w-full py-3.5 px-4 bg-[#FF5A1F] text-[#0E1116] font-headline-md font-bold tracking-wider text-[14px] uppercase border border-[#FF5A1F] shadow-hard-2 hover:bg-white hover:text-[#0E1116] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all flex items-center justify-center gap-2">
+<span>Return to Mission Control</span>
+<span class="material-symbols-outlined text-[18px]">keyboard_return</span>
+</button>
+<div class="text-center mt-2">
+<span class="font-label-caps text-[9px] text-[#8B98A9] tracking-widest">TRANSMISSION CHANNEL ID: TX-APOGEE-FINAL</span>
+</div>
+</section>
+</main>
+<!-- SHARED COMPONENT: BottomNavBar (Docked Bottom Full-Width) -->
+<nav class="bg-surface-container-lowest dark:bg-surface-container-lowest text-primary dark:text-primary docked full-width bottom-0 rounded-none border-t border-surface-container-highest dark:border-surface-container-highest fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-14 px-2 max-w-[412px] mx-auto right-0">
+<!-- DEBRIEF (ACTIVE NAVIGATION: Style Active applied) -->
+<a class="flex flex-col items-center justify-center text-primary-container dark:text-primary-container border-t-2 border-primary-container py-1 px-3 bg-surface-container dark:bg-surface-container active:translate-y-0.5 transition-transform duration-75" href="#debrief">
+<span class="material-symbols-outlined">description</span>
+<span class="text-label-caps font-label-caps text-[10px] mt-0.5">DEBRIEF</span>
+</a>
+<!-- TELEMETRY (INACTIVE) -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline py-1 px-3 hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-low active:translate-y-0.5 transition-transform duration-75" href="#telemetry">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-label-caps font-label-caps text-[10px] mt-0.5">TELEMETRY</span>
+</a>
+<!-- MATRIX (INACTIVE) -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline py-1 px-3 hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-low active:translate-y-0.5 transition-transform duration-75" href="#matrix">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="text-label-caps font-label-caps text-[10px] mt-0.5">MATRIX</span>
+</a>
+<!-- MANIFEST (INACTIVE) -->
+<a class="flex flex-col items-center justify-center text-outline dark:text-outline py-1 px-3 hover:text-on-surface dark:hover:text-on-surface hover:bg-surface-container-low dark:hover:bg-surface-container-low active:translate-y-0.5 transition-transform duration-75" href="#manifest">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-label-caps font-label-caps text-[10px] mt-0.5">MANIFEST</span>
+</a>
+</nav>
+</div>
+<!-- Micro Interaction Script for Console State Toggle -->
+<script>
+    function switchState(mode) {
+      const normalView = document.getElementById('view-normal');
+      const loadingView = document.getElementById('view-loading');
+      const errorView = document.getElementById('view-error');
+
+      const btnNormal = document.getElementById('btn-state-normal');
+      const btnLoading = document.getElementById('btn-state-loading');
+      const btnError = document.getElementById('btn-state-error');
+
+      // Reset styles
+      [btnNormal, btnLoading, btnError].forEach(btn => {
+        btn.className = "flex-1 py-1 text-[10px] font-label-caps border border-[#3E4652] bg-[#0E1116] text-[#8B98A9]";
+      });
+
+      normalView.classList.add('hidden');
+      loadingView.classList.add('hidden');
+      errorView.classList.add('hidden');
+
+      if (mode === 'normal') {
+        normalView.classList.remove('hidden');
+        btnNormal.className = "flex-1 py-1 text-[10px] font-label-caps border border-[#3DFFA2] bg-[#3DFFA2]/10 text-[#3DFFA2]";
+      } else if (mode === 'loading') {
+        loadingView.classList.remove('hidden');
+        btnLoading.className = "flex-1 py-1 text-[10px] font-label-caps border border-[#BFE3FF] bg-[#BFE3FF]/10 text-[#BFE3FF]";
+      } else if (mode === 'error') {
+        errorView.classList.remove('hidden');
+        btnError.className = "flex-1 py-1 text-[10px] font-label-caps border border-[#FFB547] bg-[#FFB547]/10 text-[#FFB547]";
+      }
+    }
+  </script>
+</body></html>
