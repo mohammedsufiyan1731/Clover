@@ -28,15 +28,26 @@ export default function StyleGuide() {
         description="Analog Mission Control design tokens, typography specifications, component sheets, and visual anchor directly sourced from Stitch Screen 0becf176546f479dbce4a0f69bc8974d."
         status={<StatusStamp label="OPERATIONAL" tone="phosphor" rotation="-rotate-2" />}
         action={
-          <a
-            href="/stitch-export/S0_apogee-analog-mission-control-style-guide.html"
-            target="_blank"
-            rel="noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0E1116] border border-[#8B98A9]/40 hover:border-[#FF5A1F] text-white rounded-[2px] text-xs font-mono-data"
-          >
-            <ExternalLink size={13} />
-            <span>View Raw Stitch HTML</span>
-          </a>
+          <div className="flex flex-wrap items-center gap-2">
+            <a
+              href="/stitch-export/S0_apogee-analog-mission-control-style-guide.html"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0E1116] border border-[#8B98A9]/40 hover:border-[#FF5A1F] text-white rounded-[2px] text-xs font-mono-data"
+            >
+              <ExternalLink size={13} />
+              <span>S0 Style Seed HTML</span>
+            </a>
+            <a
+              href="/stitch-export/S1_console-handshake-access.html"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#0E1116] border border-[#8B98A9]/40 hover:border-[#3DFFA2] text-white rounded-[2px] text-xs font-mono-data"
+            >
+              <ExternalLink size={13} />
+              <span>S1 Handshake HTML</span>
+            </a>
+          </div>
         }
       />
 
